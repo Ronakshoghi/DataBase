@@ -5,7 +5,9 @@ Date: 07.04.22
 Time: 17:36
 
 """
-
+"""
+Thia function get any key as input and returns a list contained the corresponding sigma and hash values.
+"""
 def Key_Parser(keys):
     Keys_Parsered = []
     for key in keys:
@@ -21,6 +23,9 @@ def Key_Parser(keys):
                               int(sig23[1]), int(sig13[1]), int(sig12[1]), hash])
     return (Keys_Parsered)
 
+"""
+Thia function finds the desired key based on the required load condition. 
+"""
 
 def Key_Finder (keys, Desired_Condition): #Key_Finder(Keys, [1, 1, 1, -1, 1, -1])
     Parsered_Keys = Key_Parser(keys)

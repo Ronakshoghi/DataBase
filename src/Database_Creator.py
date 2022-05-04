@@ -5,11 +5,16 @@ Date: 07.04.22
 Time: 18:20
 
 """
+
+
 import numpy as np
 import Key_Parser as KP
 import Key_Generator as KG
 import json
 
+"""
+Thia function insert the loads from a file into database. 
+"""
 def Insert_Intital_Load(file):
     Main_Dict = {}
     loads = np.genfromtxt(file)

@@ -9,6 +9,10 @@ import os
 import Database_Creator as DC
 import json
 
+"""
+Thia function read all the output files in the result folder and write them in the database. 
+"""
+
 def Results_Reader (Key):
     Results_Folders = []
     Source_Path = os.getcwd()
