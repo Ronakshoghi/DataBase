@@ -1,0 +1,59 @@
+# -*- coding: mbcs -*-
+#
+# Abaqus/CAE Release 6.14-2 replay file
+# Internal Version: 2014_08_22-15.53.04 134497
+# Run by shoghrm7 on Thu Feb 17 13:55:14 2022
+#
+
+# from driverUtils import executeOnCaeGraphicsStartup
+# executeOnCaeGraphicsStartup()
+#: Executing "onCaeGraphicsStartup()" in the site directory ...
+from abaqus import *
+from abaqusConstants import *
+session.Viewport(name='Viewport: 1', origin=(0.0, 0.0), width=973.90625, 
+    height=287.602081298828)
+session.viewports['Viewport: 1'].makeCurrent()
+session.viewports['Viewport: 1'].maximize()
+from caeModules import *
+from driverUtils import executeOnCaeStartup
+executeOnCaeStartup()
+session.viewports['Viewport: 1'].partDisplay.geometryOptions.setValues(
+    referenceRepresentation=ON)
+a = mdb.models['Model-1'].rootAssembly
+session.viewports['Viewport: 1'].setValues(displayedObject=a)
+mdb.ModelFromInputFile(name='geometry_Periodic', 
+    inputFileName='/icams/shoghrm7/icams/icams/exchange/For_Ronak/Crystal_Plasticity_UMAT/Examples/03_Abhishek/geometry_Periodic.inp')
+#: The model "geometry_Periodic" has been created.
+#: WARNING: Empty part PART-1. This occurred while reading keyword options within part definition. 
+#: WARNING: Part instance PART-1-1 references an empty part. A new part named PART-1-1 will be created from the mesh data in part instance PART-1-1. 
+#: The part "PART-1-1" has been imported from the input file.
+#: WARNING: 1632 unique equation definitions will have to be created in order to import the model. This may take a significant amount of time  ... 
+#:     completed equation number 150 
+#:     completed equation number 300 
+#:     completed equation number 450 
+#:     completed equation number 600 
+#:     completed equation number 750 
+#:     completed equation number 900 
+#:     completed equation number 1050 
+#:     completed equation number 1200 
+#:     completed equation number 1350 
+#:     completed equation number 1500 
+#: 
+#: WARNING: The following keywords/parameters are not yet supported by the input file reader:
+#: ---------------------------------------------------------------------------------
+#: *PREPRINT
+#: *SOLVERCONTROLS
+#: The model "geometry_Periodic" has been imported from an input file. 
+#: Please scroll up to check for error and warning messages.
+session.viewports['Viewport: 1'].view.setValues(nearPlane=3.78091, 
+    farPlane=5.21909, width=3.49373, height=1.75838, viewOffsetX=-0.0432917, 
+    viewOffsetY=-0.104259)
+session.viewports['Viewport: 1'].assemblyDisplay.setValues(
+    optimizationTasks=OFF, geometricRestrictions=OFF, stopConditions=OFF)
+a = mdb.models['geometry_Periodic'].rootAssembly
+session.viewports['Viewport: 1'].setValues(displayedObject=a)
+session.viewports['Viewport: 1'].enableMultipleColors()
+session.viewports['Viewport: 1'].setColor(initialColor='#BDBDBD')
+cmap=session.viewports['Viewport: 1'].colorMappings['Material']
+session.viewports['Viewport: 1'].setColor(colorMapping=cmap)
+session.viewports['Viewport: 1'].disableMultipleColors()
