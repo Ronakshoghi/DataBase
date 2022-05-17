@@ -7,6 +7,7 @@ Time: 11:00
 a function to create the load cases for the Abaqus input file. This script creates the remPart.inp file based on the 6D unit stresses distributed on surfce of unit sphere.
 The result would be n rempart.inp files
 the input required for this function is sigdata as text file.
+
 """
 import numpy as np
 
