@@ -30,13 +30,10 @@ def Create_Sub_Folder(Key):
         os.mkdir(os.path.join(Key, folder))
     Current_Path_1 = os.path.abspath(Key)
     Key_Inputs_Path = "{}/inputs".format(Current_Path_1)
-    print(Key_Inputs_Path)
     for file_name in os.listdir(Abaqus_Constant_Files_Path):
         source = os.path.join(Abaqus_Constant_Files_Path, file_name)
         destination = os.path.join(Key_Inputs_Path, file_name)
         if os.path.isfile(source):
             shutil.copy(source, destination)
-            print('copied', file_name)
-
 # Key = "Test"
 # Create_Sub_Folder(Key)
