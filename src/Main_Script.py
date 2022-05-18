@@ -11,11 +11,16 @@ import Key_Generator as KG
 import Database_Creator as DC
 import Result_Parser as RP
 import Meta_reader as MR
+import json
 
 #load_cases = 'sigdata1.txt'
 #Data_Base = DC.Insert_Intital_Load(load_cases)
 #DC.Json_Database_Creator(Data_Base, "Data_Base_Updated.json")
-MR.Meta_Reader(KG.Key_Generator([-7.626425197906852, 20.504493245472673, -36.88058941350355, 0.0, 0.0, 0.0]))
+
+#MR.Meta_Writer(KG.Key_Generator([-7.626425197906852, 20.504493245472673, -36.88058941350355, 0.0, 0.0, 0.0]), "Data_Base_Updated.json")
+
+
+
 #RP.Results_Writer(KG.Key_Generator([-7.626425197906852, 20.504493245472673, -36.88058941350355, 0.0, 0.0, 0.0]), "Data_Base_Updated.json")
 
 # Keys = Data_Base.keys()

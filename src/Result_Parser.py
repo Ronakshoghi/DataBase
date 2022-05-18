@@ -8,7 +8,7 @@ Time: 02:27
 import os
 import Database_Creator as DC
 import json
-
+import Meta_reader as MR
 """
 Thia function read all the output files in the result folder and write them in the database. 
 """
@@ -45,7 +45,6 @@ def Results_Reader (Key):
             os.chdir(Source_Path)
             return None
 
-
 def Results_Writer (key, json_file):
     Results = Results_Reader(key)
     with open(json_file, 'w') as output_file:
@@ -60,3 +59,4 @@ def Results_Writer (key, json_file):
 
         else:
             print("The key was not found in JSON file")
+
