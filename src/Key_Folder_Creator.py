@@ -22,6 +22,8 @@ def Create_Key_Folder(Keys_Folder_Name):
         print ('Error: Creating directory. ' +  Keys_Folder_Name)
 
 
+# a function to create 2 subfolder of inputs and results for each key and copy the constant abaqus file into the input.
+
 def Create_Sub_Folder(Key):
     Abaqus_Constant_Files_Path = "{}/Abaqus_Constant_Files".format(Current_Path)
     Create_Key_Folder(Key)

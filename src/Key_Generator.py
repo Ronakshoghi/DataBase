@@ -5,7 +5,7 @@ Date: 07.04.22
 Time: 15:22
 
 """
-
+#It should read sigdata or load case from Abaqus_Temp_files
 """
 This function creates a unique key for each load case which then will be used to identify and select any desired load case in the database. 
 Symbol Guidline:
