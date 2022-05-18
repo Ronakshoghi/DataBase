@@ -31,6 +31,8 @@ def Material_Orientation_Generator(Abaqus_Temp_Files_Path):
             content = ['*Material, name=Material-' + str(i + 1) + '\n', '*Depvar\n', '    200,\n',
                        '*User Material, constants=4\n', str(material_ID) + ',' + orientation_str + '\n']
             mr.writelines(content)
+        mr.write('**')
+        mr.close()
         return None
 
 # Abaqus_Temp_Files_Path = "{}/Abaqus_Temp_Files".format(Current_Path)
