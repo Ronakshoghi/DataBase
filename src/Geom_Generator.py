@@ -9,16 +9,15 @@ material.inp file can be created based on the grain orientation description as o
 MTEX or Kanapy. This Material.inp file needs to be added to the final geometry_Periodic.inp using *Include
 
 geometry_Periodic.inp still lacks the load file in it.
+This file needs to be written in the Abaqus_Constant_File.
 """
 import os
+import shutil
 import numpy as np
-Source_Path = os.getcwd()
-os.chdir('..')
-Current_Path = os.getcwd()
-def Geom_Input_Generator(Abaqus_Temp_Files_Path):
 
-    Geoemtry_File_Path = "{}/geometry_Periodic.inp".format(Abaqus_Temp_Files_Path)
-    with open(Geoemtry_File_Path, "r") as fr:
+def Geom_Input_Generator(Abaqus_Temp_Files_Path):
+    Geometry_File_Path = "{}/geometry_Periodic.inp".format(Abaqus_Temp_Files_Path)
+    with open(Geometry_File_Path, "r") as fr:
         material_addition = ['**\n', '*Include, input='+"Material.inp"+'\n']
         prev_line = False
         lines = []
@@ -27,11 +26,50 @@ def Geom_Input_Generator(Abaqus_Temp_Files_Path):
                 lines.append(line)
             if '*End Assembly' in line:
                 prev_line = True
-    with open(Geoemtry_File_Path, 'w') as fr:
+    with open(Geometry_File_Path, 'w') as fr:
         for line in lines:
             fr.write(line)
         fr.writelines(material_addition)
+    return None
 
+# A function to generate the geometry input file for each key, look for the key folder and write the geom file in that.
+# The name also changes for each key
 # Abaqus_Temp_Files_Path = "{}/Abaqus_Temp_Files".format(Current_Path)
+
+def Abaqus_Input_Generator(Key):
+    Source_Path = os.getcwd()
+    os.chdir('..')
+    Current_Path = os.getcwd()
+    Abaqus_Temp_Files_Path = "{}/Abaqus_Temp_Files".format(Current_Path)
+    Geom_Input_Generator(Abaqus_Temp_Files_Path)
+    Geometry_File_Path = "{}/geometry_Periodic.inp".format(Abaqus_Temp_Files_Path)
+    Keys_Path ="{}/Keys".format(Current_Path)
+    os.chdir(Keys_Path)
+    Key_path = os.path.abspath(Key)
+    Key_Inputs_Path = "{}/inputs".format(Key_path)
+    shutil.copy2(Geometry_File_Path, Key_Inputs_Path)
+    result = []
+    for root, dir, files in os.walk(Key_Inputs_Path):
+        for filename in files:
+            if "remPart" in filename:
+                result.append(os.path.join(root, filename))
+    Load_File_Path = result[0]
+    Load_File_Name = os.path.basename(Load_File_Path)
+    Geom_File_Path = "{}/geometry_Periodic.inp".format(Key_Inputs_Path)
+    with open(Geom_File_Path, "a") as fr:
+         load_addition = ['**\n', '*Include, input='+Load_File_Name+'\n','**\n']
+         fr.writelines(load_addition)
+    fr.close()
+    Geom_File_Name_New = Key + "_Abaqus_Input_File.inp"
+    os.chdir(Key_Inputs_Path)
+    Geom_File_Name_New_path = os.path.abspath(Geom_File_Name_New)
+    print(Geom_File_Path)
+    print(Geom_File_Name_New_path)
+    os.rename(Geom_File_Path, Geom_File_Name_New_path)
+    return None
+Key = "Test"
+Geom_Input_Generator(Key)
+
+
 
 
