@@ -66,7 +66,8 @@ def Abaqus_Input_Generator(Key):
     print(Geom_File_Path)
     print(Geom_File_Name_New_path)
     os.rename(Geom_File_Path, Geom_File_Name_New_path)
-    return None
+
+
 Key = "Test"
 Geom_Input_Generator(Key)
 
