@@ -10,10 +10,13 @@ MTEX or Kanapy. This Material.inp file needs to be added to the final geometry_P
 
 geometry_Periodic.inp still lacks the load file in it.
 This file needs to be written in the Abaqus_Constant_File.
+
+for this code the geometry file and the remPart should be available in the key folder.
 """
 import os
 import shutil
 import numpy as np
+
 
 def Geom_Input_Generator(Abaqus_Temp_Files_Path):
     Geometry_File_Path = "{}/geometry_Periodic.inp".format(Abaqus_Temp_Files_Path)
@@ -36,18 +39,21 @@ def Geom_Input_Generator(Abaqus_Temp_Files_Path):
 # The name also changes for each key
 # Abaqus_Temp_Files_Path = "{}/Abaqus_Temp_Files".format(Current_Path)
 
+
 def Abaqus_Input_Generator(Key):
-    Source_Path = os.getcwd()
-    os.chdir('..')
     Current_Path = os.getcwd()
     Abaqus_Temp_Files_Path = "{}/Abaqus_Temp_Files".format(Current_Path)
     Geom_Input_Generator(Abaqus_Temp_Files_Path)
     Geometry_File_Path = "{}/geometry_Periodic.inp".format(Abaqus_Temp_Files_Path)
+    Material_File_Path = "{}/Material.inp".format(Abaqus_Temp_Files_Path)
+    Orientation_File_Path = "{}/Orientation.txt".format(Abaqus_Temp_Files_Path)
     Keys_Path ="{}/Keys".format(Current_Path)
     os.chdir(Keys_Path)
     Key_path = os.path.abspath(Key)
     Key_Inputs_Path = "{}/inputs".format(Key_path)
-    shutil.copy2(Geometry_File_Path, Key_Inputs_Path)
+    files_path = [Geometry_File_Path, Material_File_Path, Orientation_File_Path]
+    for file in files_path:
+        shutil.copy2(file, Key_Inputs_Path)
     result = []
     for root, dir, files in os.walk(Key_Inputs_Path):
         for filename in files:
@@ -66,10 +72,7 @@ def Abaqus_Input_Generator(Key):
     print(Geom_File_Path)
     print(Geom_File_Name_New_path)
     os.rename(Geom_File_Path, Geom_File_Name_New_path)
-
-
-Key = "Test"
-Geom_Input_Generator(Key)
+    os.chdir(Current_Path)
 
 
 

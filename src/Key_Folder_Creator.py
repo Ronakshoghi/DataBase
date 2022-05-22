@@ -8,12 +8,10 @@ This function creates a local folder with the specified path for each key.
 """
 import os
 import shutil
-Source_Path = os.getcwd()
-os.chdir('..')
-Current_Path = os.getcwd()
-Abaqus_Constant_Files_Path = "{}/Abaqus_Constant_Files".format(Current_Path)
-def Create_Key_Folder(Keys_Folder_Name):
-    Keys_Path = "{}/Keys".format(Current_Path)
+
+
+def Create_Key_Folder(Keys_Folder_Name, CP):
+    Keys_Path = "{}/Keys".format(CP)
     os.chdir(Keys_Path)
     try:
         if not os.path.exists(Keys_Folder_Name):
@@ -25,8 +23,10 @@ def Create_Key_Folder(Keys_Folder_Name):
 # a function to create 2 subfolder of inputs and results for each key and copy the constant abaqus file into the input.
 
 def Create_Sub_Folder(Key):
+    Current_Path = os.getcwd()
     Abaqus_Constant_Files_Path = "{}/Abaqus_Constant_Files".format(Current_Path)
-    Create_Key_Folder(Key)
+    Abaqus_Constant_Files_Path = "{}/Abaqus_Constant_Files".format(Current_Path)
+    Create_Key_Folder(Key, Current_Path)
     folders = ['inputs', 'results']
     for folder in folders:
         os.mkdir(os.path.join(Key, folder))
@@ -37,5 +37,5 @@ def Create_Sub_Folder(Key):
         destination = os.path.join(Key_Inputs_Path, file_name)
         if os.path.isfile(source):
             shutil.copy(source, destination)
-# Key = "Test"
-# Create_Sub_Folder(Key)
+    os.chdir(Current_Path)
+
