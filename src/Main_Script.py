@@ -17,11 +17,8 @@ import Geom_Generator as GG
 import os
 import json
 
-#load_cases = 'sigdata1.txt'
-#Data_Base = DC.Insert_Intital_Load(load_cases)
-#DC.Json_Database_Creator(Data_Base, "Data_Base_Updated.json")
 
-#MR.Meta_Writer(KG.Key_Generator([-7.626425197906852, 20.504493245472673, -36.88058941350355, 0.0, 0.0, 0.0]), "Data_Base_Updated.json")
+
 
 "Pre-Processing"
 
@@ -40,13 +37,16 @@ for i, load in enumerate(loads):
     KFC.Create_Sub_Folder(Key)
     LC.Load_File_Generator(load, Key)
     GG.Abaqus_Input_Generator(Key)
-    if i == 10:
-        break
 
 "Main Process"
 
 
 "Post Processing"
+#load_cases = 'sigdata1.txt'
+#Data_Base = DC.Insert_Intital_Load(load_cases)
+#DC.Json_Database_Creator(Data_Base, "Data_Base_Updated.json")
+
+#MR.Meta_Writer(KG.Key_Generator([-7.626425197906852, 20.504493245472673, -36.88058941350355, 0.0, 0.0, 0.0]), "Data_Base_Updated.json")
 #RP.Results_Writer(KG.Key_Generator([-7.626425197906852, 20.504493245472673, -36.88058941350355, 0.0, 0.0, 0.0]), "Data_Base_Updated.json")
 
 # Keys = Data_Base.keys()

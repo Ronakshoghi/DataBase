@@ -22,9 +22,15 @@ F = sigma 12
 
 """
 import hashlib
+import os
 
 
 def Key_Generator(Load_Case):
+
+    Current_Path = os.getcwd()
+    Abaqus_Temp_Files_Path = "{}/Abaqus_Temp_Files".format(Current_Path)
+    Orientation_File_Path = "{}/Orientation.txt".format(Abaqus_Temp_Files_Path)
+    Orientation_File = "Orientation.txt"
     Load_Evaluation = []
 
     for load in Load_Case:
@@ -37,8 +43,10 @@ def Key_Generator(Load_Case):
 
     Load_String = ''.join(str(e) for e in Load_Case)
     Load_Hash = hashlib.sha256(Load_String.encode('utf-8')).hexdigest()
-
-    Key = "A,{}_B,{}_C,{}_D,{}_E,{}_F,{}_{}".format(Load_Evaluation[0],Load_Evaluation[1],Load_Evaluation[2],Load_Evaluation[3],Load_Evaluation[4],Load_Evaluation[5],Load_Hash[:5])
+    with open(Orientation_File_Path) as f:
+        data = f.read()
+        Orientation_Hash = hashlib.sha256(data.encode('utf-8')).hexdigest()
+    Key = "A,{}_B,{}_C,{}_D,{}_E,{}_F,{}_{}_{}".format(Load_Evaluation[0],Load_Evaluation[1],Load_Evaluation[2],Load_Evaluation[3],Load_Evaluation[4],Load_Evaluation[5],Load_Hash[:5],Orientation_Hash[:5])
     return (Key)
 
 
