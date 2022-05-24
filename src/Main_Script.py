@@ -14,6 +14,8 @@ import Meta_reader as MR
 import Load_Creator as LC
 import Key_Folder_Creator as KFC
 import Geom_Generator as GG
+import Abaqus_Runner as AR
+import Strain_Result_Check as SRC
 import os
 import json
 
@@ -32,13 +34,35 @@ Source_Path = os.getcwd()
 os.chdir('..')
 Current_Path = os.getcwd()
 
+"Main Process"
+
 for i, load in enumerate(loads):
     Key = KG.Key_Generator(load)
     KFC.Create_Sub_Folder(Key)
-    LC.Load_File_Generator(load, Key)
-    GG.Abaqus_Input_Generator(Key)
+    scaling_factor = 40
+    print ("initial load: {}".format(load))
+    scaled_load = load * scaling_factor
+    Max_Strain = 0
+    itertation = 0
+    Lower_Strain_Limit = 0.027
+    Upper_Strain_Limit = 0.033
+    while (Upper_Strain_Limit < Max_Strain or Lower_Strain_Limit > Max_Strain ):
+        itertation += 1
+        print ("scaling factor {} applied load in iteration {}: {}".format(scaling_factor, itertation, scaled_load))
+        LC.Load_File_Generator(scaled_load, Key)
+        GG.Abaqus_Input_Generator(Key)
+        AR.Abaqus_Runner(Key, 4)
+        Max_Strain = SRC.Max_Strain_Finder(Key)
+        print ("Max Strain {}".format(Max_Strain))
+        if Max_Strain < Lower_Strain_Limit:
+            scaling_factor *= 1.05
+            scaled_load = load * scaling_factor
 
-"Main Process"
+        elif Max_Strain > Upper_Strain_Limit:
+            scaling_factor *= 0.95
+            scaled_load = load * scaling_factor
+
+    break
 
 
 "Post Processing"

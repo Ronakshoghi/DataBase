@@ -24,7 +24,7 @@ def Load_File_Generator(load, key ):
     with open(remPart_File, 'r') as f:
         lines = f.readlines()
 
-    with open("{}_remPart_file".format(key), 'w+') as f:
+    with open("{}_remPart_file.inp".format(key), 'w+') as f:
         for line in lines:
             if 'V2,1' in line:
                 f.write('V2,1, {}\n'.format(load[0]))
