@@ -1,0 +1,138 @@
+**
+** MATERIALS
+**
+*Material, name=Material-1
+*Depvar
+    200,
+*User Material, constants=4
+2,21.4628,99.5786,251.318
+*Material, name=Material-2
+*Depvar
+    200,
+*User Material, constants=4
+2,245.51,71.7165,239.95
+*Material, name=Material-3
+*Depvar
+    200,
+*User Material, constants=4
+2,15.2752,75.1703,64.1277
+*Material, name=Material-4
+*Depvar
+    200,
+*User Material, constants=4
+2,25.7204,114.584,46.0852
+*Material, name=Material-5
+*Depvar
+    200,
+*User Material, constants=4
+2,187.794,97.8568,359.669
+*Material, name=Material-6
+*Depvar
+    200,
+*User Material, constants=4
+2,34.8228,165.702,61.6036
+*Material, name=Material-7
+*Depvar
+    200,
+*User Material, constants=4
+2,294.533,14.5046,11.7363
+*Material, name=Material-8
+*Depvar
+    200,
+*User Material, constants=4
+2,294.317,131.733,202.032
+*Material, name=Material-9
+*Depvar
+    200,
+*User Material, constants=4
+2,260.078,141.959,317.472
+*Material, name=Material-10
+*Depvar
+    200,
+*User Material, constants=4
+2,53.9516,104.784,240.903
+*Material, name=Material-11
+*Depvar
+    200,
+*User Material, constants=4
+2,237.458,127.14,68.556
+*Material, name=Material-12
+*Depvar
+    200,
+*User Material, constants=4
+2,186.694,91.1818,132.81
+*Material, name=Material-13
+*Depvar
+    200,
+*User Material, constants=4
+2,350.271,108.724,165.861
+*Material, name=Material-14
+*Depvar
+    200,
+*User Material, constants=4
+2,233.637,25.4099,353.39
+*Material, name=Material-15
+*Depvar
+    200,
+*User Material, constants=4
+2,288.119,32.7897,56.3058
+*Material, name=Material-16
+*Depvar
+    200,
+*User Material, constants=4
+2,163.367,153.463,307.988
+*Material, name=Material-17
+*Depvar
+    200,
+*User Material, constants=4
+2,155.661,61.594,232.115
+*Material, name=Material-18
+*Depvar
+    200,
+*User Material, constants=4
+2,297.113,117.501,135.458
+*Material, name=Material-19
+*Depvar
+    200,
+*User Material, constants=4
+2,30.0491,98.8779,68.7325
+*Material, name=Material-20
+*Depvar
+    200,
+*User Material, constants=4
+2,47.9416,84.506,154.171
+*Material, name=Material-21
+*Depvar
+    200,
+*User Material, constants=4
+2,62.4199,27.6901,173.528
+*Material, name=Material-22
+*Depvar
+    200,
+*User Material, constants=4
+2,140.738,99.4689,43.4202
+*Material, name=Material-23
+*Depvar
+    200,
+*User Material, constants=4
+2,299.297,14.9603,212.223
+*Material, name=Material-24
+*Depvar
+    200,
+*User Material, constants=4
+2,289.211,113.396,81.4276
+*Material, name=Material-25
+*Depvar
+    200,
+*User Material, constants=4
+2,21.7696,66.2844,138.463
+*Material, name=Material-26
+*Depvar
+    200,
+*User Material, constants=4
+2,143.733,70.5686,209.875
+*Material, name=Material-27
+*Depvar
+    200,
+*User Material, constants=4
+2,189.675,85.5118,90.6502
