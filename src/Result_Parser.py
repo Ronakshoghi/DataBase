@@ -6,44 +6,34 @@ Time: 02:27
 
 """
 import os
-import Database_Creator as DC
+import Database_Handler as DC
 import json
-import Meta_reader as MR
+
 """
 Thia function read all the output files in the result folder and write them in the database. 
 """
 
 def Results_Reader (Key):
-    Results_Folders = []
-    Source_Path = os.getcwd()
-    os.chdir('..')
     Current_Path = os.getcwd()
-    Results_Path = "{}/results".format(Current_Path)
-    for root, dirs, files in os.walk(Results_Path , topdown=False):
-        for name in dirs:
-            Results_Folders.append(name)
-    for result_folder in Results_Folders:
-        if Key == result_folder:
-            print ("Results Found!")
-            os.chdir("{}/{}".format(Results_Path, result_folder))
-            Results_Files_Name = []
-            for root, dirs, files in os.walk(os.getcwd(), topdown=False):
-                for name in files:
-                    Results_Files_Name.append(name)
-            Available_Results = {}
-            for Result_File in Results_Files_Name:
-                with open("{}/{}/{}".format(Results_Path, result_folder, Result_File)) as Temp_Result:
-                    lines = Temp_Result.readlines()
-                    Values = []
-                    for line in lines:
-                        Values.append(float(line.strip('\n')))
-                    Available_Results[Result_File.strip(".out")] = Values
-            os.chdir(Source_Path)
-            return Available_Results
-        else:
-            print ("Results not Found!")
-            os.chdir(Source_Path)
-            return None
+    Keys_Path ="{}/Keys".format(Current_Path)
+    os.chdir(Keys_Path)
+    Key_path = os.path.abspath(Key)
+    Results_Path = "{}/results".format(Key_path)
+    os.chdir(Results_Path)
+    Results_Files_Name = []
+    for root, dirs, files in os.walk(os.getcwd(), topdown=False):
+        for name in files:
+            Results_Files_Name.append(name)
+    Available_Results = {}
+    for Result_File in Results_Files_Name:
+        with open("{}/{}".format(Results_Path, Result_File)) as Temp_Result:
+            lines = Temp_Result.readlines()
+            Values = []
+            for line in lines:
+                Values.append(float(line.strip('\n')))
+            Available_Results[Result_File.strip(".out")] = Values
+    os.chdir(Current_Path)
+    return Available_Results
 
 def Results_Writer (key, json_file):
     Results = Results_Reader(key)

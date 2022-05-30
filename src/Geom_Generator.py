@@ -15,8 +15,6 @@ for this code the geometry file and the remPart should be available in the key f
 """
 import os
 import shutil
-import numpy as np
-
 
 def Geom_Input_Generator(Abaqus_Temp_Files_Path):
     Geometry_File_Path = "{}/geometry_Periodic.inp".format(Abaqus_Temp_Files_Path)
@@ -69,8 +67,6 @@ def Abaqus_Input_Generator(Key):
     Geom_File_Name_New = Key + "_Abaqus_Input_File.inp"
     os.chdir(Key_Inputs_Path)
     Geom_File_Name_New_path = os.path.abspath(Geom_File_Name_New)
-    print(Geom_File_Path)
-    print(Geom_File_Name_New_path)
     os.rename(Geom_File_Path, Geom_File_Name_New_path)
     os.chdir(Current_Path)
 

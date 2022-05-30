@@ -29,7 +29,11 @@ def Create_Sub_Folder(Key):
     Create_Key_Folder(Key, Current_Path)
     folders = ['inputs', 'results']
     for folder in folders:
-        os.mkdir(os.path.join(Key, folder))
+        try:
+            if not os.path.exists(os.path.join(Key, folder)):
+                os.makedirs(os.path.join(Key, folder))
+        except OSError:
+            print('Error: Creating directory. ' + os.path.join(Key, folder))
     Current_Path_1 = os.path.abspath(Key)
     Key_Inputs_Path = "{}/inputs".format(Current_Path_1)
     for file_name in os.listdir(Abaqus_Constant_Files_Path):

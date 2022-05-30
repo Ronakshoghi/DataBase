@@ -9,7 +9,6 @@ The result would be n rempart.inp files
 the input required for this function is sigdata as text file.
 
 """
-import numpy as np
 import os
 
 def Load_File_Generator(load, key ):

@@ -30,7 +30,6 @@ def Key_Generator(Load_Case):
     Current_Path = os.getcwd()
     Abaqus_Temp_Files_Path = "{}/Abaqus_Temp_Files".format(Current_Path)
     Orientation_File_Path = "{}/Orientation.txt".format(Abaqus_Temp_Files_Path)
-    Orientation_File = "Orientation.txt"
     Load_Evaluation = []
 
     for load in Load_Case:
