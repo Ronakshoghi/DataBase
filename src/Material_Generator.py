@@ -15,7 +15,7 @@ import numpy as np
 
 
 def Material_Orientation_Generator(Abaqus_Temp_Files_Path):
-    Current_Path = os.getcwd()
+
     Orientation_File_Path = "{}/Orientation.txt".format(Abaqus_Temp_Files_Path)
     material_ID = 2
     with open(Orientation_File_Path, 'r') as f:
@@ -31,8 +31,8 @@ def Material_Orientation_Generator(Abaqus_Temp_Files_Path):
             mr.writelines(content)
         mr.write('**')
         mr.close()
-        os.chdir(Current_Path)
         return None
 
-# Abaqus_Temp_Files_Path = "{}/Abaqus_Temp_Files".format(Current_Path)
-# Material_Orientation_Generator(Abaqus_Temp_Files_Path)
+Current_Path = os.getcwd()
+Abaqus_Temp_Files_Path = "{}/Abaqus_Temp_Files".format(Current_Path)
+Material_Orientation_Generator(Abaqus_Temp_Files_Path)
