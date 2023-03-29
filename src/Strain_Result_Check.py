@@ -16,6 +16,6 @@ def Max_Strain_Finder (Key):
     Key_path = os.path.abspath(Key)
     Key_Results_Path = "{}/results".format(Key_path)
     os.chdir(Key_Results_Path)
-    Strains = genfromtxt('StrainEPlot1.out', delimiter=' ')
+    Strains = genfromtxt('E.out', delimiter=' ')
     os.chdir(Current_Path)
     return (max(Strains))
