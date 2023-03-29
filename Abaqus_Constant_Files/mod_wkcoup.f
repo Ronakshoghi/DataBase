@@ -5,16 +5,16 @@ c
 c================================================================
       module mod_mesh_grid_size
          implicit none
-         integer, parameter :: Tnel=20000
+         integer, parameter :: Tnel=27000
          integer, parameter :: Tngp=8
-         integer, parameter :: Tnfx=128
-         integer, parameter :: Tnfy=128
-         integer, parameter :: Tnfz=128
+         integer, parameter :: Tnfx=64
+         integer, parameter :: Tnfy=64
+         integer, parameter :: Tnfz=64
          integer, parameter :: Iwkcoup_trip=0  !-->with(1), without(0) 
          integer, parameter :: Iwkcoup_grad=0  !-->with(1), without(0) 
          integer, parameter :: Iwkcoup_int=0   !-->with(1), without(0)
          integer, parameter :: Iwkcoup_sup=0   !-->with(1), without(0)
-         integer, parameter :: Iwkcoup_bk=1    !-->with(1)AFKH, with(2)CHKH, with(3)OWKH, without(0)
+         integer, parameter :: Iwkcoup_bk=3    !-->with(1)AFKH, with(2)CHKH, with(3)OWKH, without(0)
       endmodule mod_mesh_grid_size
 
 
@@ -95,7 +95,7 @@ c================================================================
          CD_parts(2)=CD_parts(1)   ! outside domain, rigid
          CD_parts(3)=CD_parts(1)   ! outside domain, free
          CD_ref = max( CD_parts(1),CD_parts(2),CD_parts(3) )
-
+         
          x_min =+1.d50  
          x_max =-1.d50
          y_min =+1.d50  
@@ -574,7 +574,7 @@ c
             real(8), parameter :: wp_mn      = 1.5d0
             real(8), parameter :: wp_si      = 1.5d0
             real(8), parameter :: wp_al      = 0.3d-20
-            real(8), parameter :: gam_crt    = 0.0224  !==> max strain for TRIP 
+            real(8), parameter :: gam_crt    = 0.0224  !==> max strain for TRIP
             real(8), parameter :: c_nucl  = 1       !==> strain: with(1) nucleation or not(0)
             real(8), parameter :: c_grth  = 0       !==> stress: with(1) growth or not(0)
             real(8), parameter :: Vf0_trp = 1.d-3   !==> inital martensite volme fraction
@@ -628,7 +628,7 @@ c-----------------------------------------------------------------------
             c_bken =-G_chem
             c_pbmb = c_pbmb0*dexp(B*7.0*G_chem/(R*T_akt))
 c-----------------------------------------------------------------------
-       
+         
 
 c-----------Shear band intersection induced martensite nucleation
             do is=1,NTtrp
@@ -764,7 +764,7 @@ c================================================================
          integer i,j,i1,i2
          real(8) mx33(3,3)
                    
-         eps_p0 = [-0.0015, -0.0015, -0.0015, 0., 0., 0.]         
+         eps_p0 = [-0.0015, -0.0015, -0.0015, 0., 0., 0.]  
          eps_x0 = [0., 0., 0., 0., 0., 0.]
          eps_y0 = [0., 0., 0., 0., 0., 0.]
          eps_z0 = [0., 0., 0., 0., 0., 0.]
@@ -792,10 +792,10 @@ c================================================================
          fem_inty(i1,i2,:)=sigR0(13:18)
          fem_intz(i1,i2,:)=sigR0(19:24)
 
-         fem_fx(i1,i2)= 0.13
-         fem_fy(i1,i2)= 0.13
-         fem_fz(i1,i2)= 0.13
-         fem_fpp(i1,i2)=0.61
+         fem_fx(i1,i2)= 0.126
+         fem_fy(i1,i2)= 0.126
+         fem_fz(i1,i2)= 0.126
+         fem_fpp(i1,i2)=0.62
 
          mx33(1,:)=[1.,0.,0.]
          mx33(2,:)=[0.,1.,0.]
@@ -926,10 +926,10 @@ c================================================================
             real(8), parameter :: s2   = 8.d0
             real(8), parameter :: a1   = 400.d0
             real(8), parameter :: a2   = 10.d0
-            real(8), parameter :: a3   = 800.d0
-            real(8), parameter :: a4   = 80.d0
+            real(8), parameter :: a3   = 0  !800.d0
+            real(8), parameter :: a4   = 0  !80.d0
             real(8), parameter :: p1   = 0.5d0
-            real(8), parameter :: p2   = 0.4d0
+            real(8), parameter :: p2   = 0  !0.4d0
 
             fem_gamx=0.d0
             fem_gamy=0.d0
@@ -1055,23 +1055,19 @@ c
 c================================================================
       module mod_wkcoup_bk
          use mod_mesh_grid_size
+         use mod_Austenite
+         use GlobalValue
          implicit none 
-         real(8),parameter:: Adir = 8.d4
-         real(8),parameter:: Adyn = 5.d2
-         real(8),parameter:: A1 = 6.d4
-         real(8),parameter:: B1 = 5.d2
-         real(8),parameter:: A2 = 0.d4
-         real(8),parameter:: B2 = 0.d3
-         real(8),parameter:: A3 = 0.d4
-         real(8),parameter:: B3 = 0.d0
-         real(8),parameter:: M_OW = 8.0d0
-         real(8),parameter:: N_slp = 48
+
          real(8) fem_bk(Tnel,Tngp,N_slp)
          real(8) fem_bk_ch(Tnel,Tngp,N_slp,3)
          real(8) fem_dbkdt(Tnel,Tngp,N_slp)
          real(8) fem_dbkdt_ch(Tnel,Tngp,N_slp,3)
-         real(8) fem_dgmdt(Tnel,Tngp,N_slp)                               
-      contains
+         real(8) fem_dgmdt(Tnel,Tngp,N_slp)
+                            
+      contains			
+c================================================================	
+
 c================================================================
 c        int: constants and state variable ini
 c================================================================
@@ -1091,10 +1087,11 @@ c================================================================
 c        int: state variable evolution
 c================================================================
          subroutine sub_bk_evolution(dtime)
-            implicit none
+         implicit none
+       
          integer i1,i2,is
          real(8) dtime
-
+c          print*,'sub_bk_evo', Adir, Adyn, A1
 c AFKH
           if (Iwkcoup_bk.eq.1) then
           do i1=1,Tnel

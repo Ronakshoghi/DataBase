@@ -108,6 +108,13 @@ class OdbData(object):
         self.sigma23Plot = []
         self.sigma12Plot = []
 
+        self.SDV156 = []
+        self.SDV157 = []
+        self.SDV158 = []
+        self.SDV159 = []
+        self.SDV160 = []
+        self.SDV161 = []
+
     def F_ODB(self, odbName, dimension, firstStep, lastStep):
 
         # Open the ODB
@@ -165,6 +172,32 @@ class OdbData(object):
                 stepTime = currentFrame.frameValue
                 self.steptime.append(stepTime)
 
+                # self.SDV156.append(currentFrame.fieldOutputs['SDV156'].getSubset(CENTROID).values[0].data)
+                # self.SDV157.append(currentFrame.fieldOutputs['SDV157'].getSubset(CENTROID).values[0].data)
+                # self.SDV158.append(currentFrame.fieldOutputs['SDV158'].getSubset(CENTROID).values[0].data)
+                # self.SDV159.append(currentFrame.fieldOutputs['SDV159'].getSubset(CENTROID).values[0].data)
+                # self.SDV160.append(currentFrame.fieldOutputs['SDV160'].getSubset(CENTROID).values[0].data)
+                # self.SDV161.append(currentFrame.fieldOutputs['SDV161'].getSubset(CENTROID).values[0].data)
+                Temp_SDV156 = []
+                Temp_SDV157 = []
+                Temp_SDV158 = []
+                Temp_SDV159 = []
+                Temp_SDV160 = []
+                Temp_SDV161 = []
+                for elementlabel in range(len(currentFrame.fieldOutputs['SDV156'].getSubset(CENTROID).values)):
+                    Temp_SDV156.append(currentFrame.fieldOutputs['SDV156'].getSubset(CENTROID).values[elementlabel].data)
+                    Temp_SDV157.append(currentFrame.fieldOutputs['SDV157'].getSubset(CENTROID).values[elementlabel].data)
+                    Temp_SDV158.append(currentFrame.fieldOutputs['SDV158'].getSubset(CENTROID).values[elementlabel].data)
+                    Temp_SDV159.append(currentFrame.fieldOutputs['SDV159'].getSubset(CENTROID).values[elementlabel].data)
+                    Temp_SDV160.append(currentFrame.fieldOutputs['SDV160'].getSubset(CENTROID).values[elementlabel].data)
+                    Temp_SDV161.append(currentFrame.fieldOutputs['SDV161'].getSubset(CENTROID).values[elementlabel].data)
+
+                self.SDV156.append(np.mean(Temp_SDV156))
+                self.SDV157.append(np.mean(Temp_SDV157))
+                self.SDV158.append(np.mean(Temp_SDV158))
+                self.SDV159.append(np.mean(Temp_SDV159))
+                self.SDV160.append(np.mean(Temp_SDV160))
+                self.SDV161.append(np.mean(Temp_SDV161))
                 #########################################################
                 # Nodal Results
                 #########################################################
@@ -223,7 +256,7 @@ class OdbData(object):
                     nodeObjectDict[node].z.append(z)
         return nodeObjectDict
 
-    def F_CaclSigmaH(self, nodeObjectDict, dimension):
+    def F_CalcSigmaH(self, nodeObjectDict, dimension):
 
         # Origin
         origin = [nodeObjectDict['V1'].x[0], nodeObjectDict['V1'].y[0], nodeObjectDict['V1'].z[0]]
@@ -560,21 +593,27 @@ odbName = '{}_Abaqus_Input_File.odb'.format(Key)
 # Result1
 Result1 = OdbData()
 node = Result1.F_ODB(odbName, dimension, beginStep, endStep)
-Result1.F_CaclSigmaH(node, dimension)
+Result1.F_CalcSigmaH(node, dimension)
 os.chdir('..')
 Key_Results_Path = "{}/results".format(os.getcwd())
 os.chdir(Key_Results_Path)
-np.savetxt('{}/Stress11Plot1.out'.format(Key_Results_Path), Result1.sigma11Plot)
-np.savetxt('{}/Stress22Plot1.out'.format(Key_Results_Path), Result1.sigma22Plot)
-np.savetxt('{}/Stress33Plot1.out'.format(Key_Results_Path), Result1.sigma33Plot)
-np.savetxt('{}/Stress12Plot1.out'.format(Key_Results_Path), Result1.sigma12Plot)
-np.savetxt('{}/Stress23Plot1.out'.format(Key_Results_Path), Result1.sigma23Plot)
-np.savetxt('{}/Stress13Plot1.out'.format(Key_Results_Path), Result1.sigma13Plot)
-np.savetxt('{}/Strain11Plot1.out'.format(Key_Results_Path), Result1.strain11Plot)
-np.savetxt('{}/Strain22Plot1.out'.format(Key_Results_Path), Result1.strain22Plot)
-np.savetxt('{}/Strain33Plot1.out'.format(Key_Results_Path), Result1.strain33Plot)
-np.savetxt('{}/Strain12Plot1.out'.format(Key_Results_Path), Result1.strain12Plot)
-np.savetxt('{}/Strain13Plot1.out'.format(Key_Results_Path), Result1.strain13Plot)
-np.savetxt('{}/Strain23Plot1.out'.format(Key_Results_Path), Result1.strain23Plot)
-np.savetxt('{}/StrainEPlot1.out'.format(Key_Results_Path), Result1.strainEPlot)
-np.savetxt('{}/StressVPlot1.out'.format(Key_Results_Path), Result1.sigmaVPlot)
+np.savetxt('{}/S11.out'.format(Key_Results_Path), Result1.sigma11Plot)
+np.savetxt('{}/S22.out'.format(Key_Results_Path), Result1.sigma22Plot)
+np.savetxt('{}/S33.out'.format(Key_Results_Path), Result1.sigma33Plot)
+np.savetxt('{}/S12.out'.format(Key_Results_Path), Result1.sigma12Plot)
+np.savetxt('{}/S23.out'.format(Key_Results_Path), Result1.sigma23Plot)
+np.savetxt('{}/S13.out'.format(Key_Results_Path), Result1.sigma13Plot)
+np.savetxt('{}/E11.out'.format(Key_Results_Path), Result1.strain11Plot)
+np.savetxt('{}/E22.out'.format(Key_Results_Path), Result1.strain22Plot)
+np.savetxt('{}/E33.out'.format(Key_Results_Path), Result1.strain33Plot)
+np.savetxt('{}/E12.out'.format(Key_Results_Path), Result1.strain12Plot)
+np.savetxt('{}/E13.out'.format(Key_Results_Path), Result1.strain13Plot)
+np.savetxt('{}/E23.out'.format(Key_Results_Path), Result1.strain23Plot)
+np.savetxt('{}/E.out'.format(Key_Results_Path), Result1.strainEPlot)
+np.savetxt('{}/S.out'.format(Key_Results_Path), Result1.sigmaVPlot)
+np.savetxt('{}/Ep11.out'.format(Key_Results_Path), Result1.SDV156)
+np.savetxt('{}/Ep22.out'.format(Key_Results_Path), Result1.SDV157)
+np.savetxt('{}/Ep33.out'.format(Key_Results_Path), Result1.SDV158)
+np.savetxt('{}/Ep12.out'.format(Key_Results_Path), Result1.SDV159)
+np.savetxt('{}/Ep13.out'.format(Key_Results_Path), Result1.SDV160)
+np.savetxt('{}/Ep23.out'.format(Key_Results_Path), Result1.SDV161)

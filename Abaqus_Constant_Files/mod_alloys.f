@@ -4,6 +4,7 @@ c +   Material library: #1==>Aluminum                                       +
 c +                                                                         +
 c +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
       module mod_Aluminum
+         use GlobalValue
          implicit none
          integer,parameter:: N_slip = 12
          real(8),parameter:: c11    = 247.d3
@@ -233,6 +234,7 @@ c +   Material library: #2==>Copper                                         +
 c +                                                                         +
 c +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
       module mod_Copper
+         use GlobalValue
          implicit none
          integer,parameter:: N_slip = 12
          real(8),parameter:: c11    = 247.d3
@@ -462,6 +464,7 @@ c +   Material library: #3==>Ferrite                                        +
 c +                                                                         +
 c +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
       module mod_Ferrite
+         use GlobalValue
          implicit none
          integer,parameter:: N_slip = 12
          real(8),parameter:: c11    = 247.d3
@@ -690,19 +693,30 @@ c +   Material library: #4==>Austenite                                      +
 c +                                                                         +
 c +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
       module mod_Austenite
+         use GlobalValue
          implicit none
+         
          integer,parameter:: N_slip = 12
-         real(8),parameter:: c11    = 247.d3
-         real(8),parameter:: c12    = 147.d3
-         real(8),parameter:: c44    = 125.d3 ! c44=2*(c11-c12) iso
          real(8),parameter:: shrt0  = 1.d-3
-         real(8),parameter:: pwfl   = 20.d0
-         real(8),parameter:: pwhd   = 2.25d0
-         real(8),parameter:: crss0  = 20.d0
-         real(8),parameter:: crsss  = 117.d0
-         real(8),parameter:: hdrt0  = 180.d0
-         real(8),parameter:: c_cpl   = 1.d0
-         real(8),parameter:: c_oth   = 1.4d0
+         real(8),parameter:: Qact   = 200.d3
+         real(8),parameter:: pwfl   = 1250
+         real(8),parameter:: pwhd   =0
+         real(8),parameter:: crsss  =500.d0
+         real(8),parameter:: hdrt0  = 0  
+         real(8),parameter:: c_cpl  = 1.d0
+         real(8),parameter:: c_oth  = 1.4d0
+c        parameters for kinematic hardening
+         real(8),parameter:: Adyn = 100.d0
+         real(8),parameter:: A1 = 65.d4
+         real(8),parameter:: B1 = 499.d2
+         real(8),parameter:: A2 = 0.d4
+         real(8),parameter:: B2 = 0.d3
+         real(8),parameter:: A3 = 0.d4
+         real(8),parameter:: B3 = 0.d0
+         real(8),parameter:: M_OW = 10.0d0
+         real(8),parameter:: N_slp = 48
+         real(8) Adir  ! temp-dependent
+c
          real(8) Mstiff(6,6)
          real(8) HMij(N_slip,N_slip)
          real(8) Dvct(N_slip,3)
@@ -713,28 +727,53 @@ c +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
          real(8) AMsmd(N_slip,3,3)
          real(8) V1smd(N_slip,6)
          real(8) V2smd(N_slip,6)
+         real(8) c11                          ! temp-dependent
+         real(8) c12                              ! temp-dependent
+         real(8) c44                              ! temp-dependent
+         real(8) crss0                            ! temp-dependent 
+      
       contains
-c        +----------------------------+
-c        +   flow and hardening lows  +
-c        +----------------------------+
-         subroutine sub_constant_ini_Austenite(IB1,IB2)
-            implicit none
-            integer i,j,is,js,IB1(9),IB2(9)
-            real(8) x1,x2,x3
+        
+c================================================================           
 
-            Dvct( 1,:)=[ 0,  1, -1] ; Nvct( 1,:)=[ -1,  1,  1]
-            Dvct( 2,:)=[ 1,  0,  1] ; Nvct( 2,:)=[ -1,  1,  1]
-            Dvct( 3,:)=[ 1,  1,  0] ; Nvct( 3,:)=[ -1,  1,  1]
-            Dvct( 4,:)=[ 0,  1, -1] ; Nvct( 4,:)=[  1,  1,  1]
-            Dvct( 5,:)=[ 1,  0, -1] ; Nvct( 5,:)=[  1,  1,  1]
-            Dvct( 6,:)=[ 1, -1,  0] ; Nvct( 6,:)=[  1,  1,  1]
-            Dvct( 7,:)=[ 0,  1,  1] ; Nvct( 7,:)=[  1,  1, -1]
-            Dvct( 8,:)=[ 1,  0,  1] ; Nvct( 8,:)=[  1,  1, -1]
-            Dvct( 9,:)=[ 1, -1,  0] ; Nvct( 9,:)=[  1,  1, -1]
-            Dvct(10,:)=[ 0,  1,  1] ; Nvct(10,:)=[  1, -1,  1]
-            Dvct(11,:)=[ 1,  0, -1] ; Nvct(11,:)=[  1, -1,  1]
-            Dvct(12,:)=[ 1,  1,  0] ; Nvct(12,:)=[  1, -1,  1]
+c================================================================
+c    define temperature-dependent paramaters for Austenite
+c================================================================           
+         subroutine param_temp_Austenite(temp)          
+            implicit none           
+C           define values for elastic constants and CRSS according to
+C           Shahmardani&Hartmaier, Metallurgical and Materials Transaction A (2023)
+C           https://doi.org/10.1007/s11661-023-06958-5
+            real(8) temp
+            if(abs(temp-temp_cur)>1.d-5)then
+               print*,'Inconsistent temperatures in param_temp_Aust',temp,temp_cur
+            end if
 
+            if(temp_cur>1.d0)then
+               c11   = 283.16d3 - 102.5d0*temp_cur
+               c12   = 118.08d3 - 42.5d0*temp_cur
+               c44   = 82.49d3  - 30.0d0*temp_cur
+               crss0 = 292.83d0 - 0.21d0*temp_cur  ! NOTE: Error in publication!
+               Adir  = 5092.d0 - 4.d0*temp_cur
+            else
+C              if no temp is defined use room temperature values
+               c11   = 256.5d3
+               c12   = 111.1d3
+               c44   = 77.2d3
+               crss0 = 170.d0
+               Adir  = 5000.d0
+cc             Values for T=923 K
+cc               c11 = 196.06d3   
+cc               c12 = 81.99d3    
+cc               c44 = 57.01d3    
+cc               crss0 = 115.d0
+cc               Adir = 1.271d3
+            end if
+            c11_gl = c11
+            c12_gl = c12
+            c44_gl = c44
+            tau0_gl = crss0
+            Adir_gl = Adir
             Mstiff(:,:)=0
             Mstiff(1,1)=c11
             Mstiff(2,2)=c11
@@ -748,6 +787,44 @@ c        +----------------------------+
             Mstiff(3,1)=c12
             Mstiff(1,2)=c12
             Mstiff(2,1)=c12
+         return 
+         endsubroutine          
+            
+c================================================================                                                 
+c        +----------------------------+
+c        +   flow and hardening lows  +
+c        +----------------------------+
+         subroutine sub_constant_ini_Austenite(IB1,IB2)
+            implicit none
+            integer i,j,is,js,IB1(9),IB2(9)
+            real(8) x1,x2,x3
+            call param_temp_Austenite(temp_cur)
+            Dvct( 1,:)=[ 0,  1, -1] ; Nvct( 1,:)=[ -1,  1,  1]
+            Dvct( 2,:)=[ 1,  0,  1] ; Nvct( 2,:)=[ -1,  1,  1]
+            Dvct( 3,:)=[ 1,  1,  0] ; Nvct( 3,:)=[ -1,  1,  1]
+            Dvct( 4,:)=[ 0,  1, -1] ; Nvct( 4,:)=[  1,  1,  1]
+            Dvct( 5,:)=[ 1,  0, -1] ; Nvct( 5,:)=[  1,  1,  1]
+            Dvct( 6,:)=[ 1, -1,  0] ; Nvct( 6,:)=[  1,  1,  1]
+            Dvct( 7,:)=[ 0,  1,  1] ; Nvct( 7,:)=[  1,  1, -1]
+            Dvct( 8,:)=[ 1,  0,  1] ; Nvct( 8,:)=[  1,  1, -1]
+            Dvct( 9,:)=[ 1, -1,  0] ; Nvct( 9,:)=[  1,  1, -1]
+            Dvct(10,:)=[ 0,  1,  1] ; Nvct(10,:)=[  1, -1,  1]
+            Dvct(11,:)=[ 1,  0, -1] ; Nvct(11,:)=[  1, -1,  1]
+            Dvct(12,:)=[ 1,  1,  0] ; Nvct(12,:)=[  1, -1,  1]
+
+cc            Mstiff(:,:)=0
+cc            Mstiff(1,1)=c11
+cc            Mstiff(2,2)=c11
+cc            Mstiff(3,3)=c11
+cc            Mstiff(4,4)=c44*2
+cc            Mstiff(5,5)=c44*2
+cc            Mstiff(6,6)=c44*2
+cc            Mstiff(2,3)=c12
+cc            Mstiff(3,2)=c12
+cc            Mstiff(1,3)=c12
+cc            Mstiff(3,1)=c12
+cc            Mstiff(1,2)=c12
+cc            Mstiff(2,1)=c12
 
             do is=1,N_slip
             Lvct(is,1)=Nvct(is,2)*Dvct(is,3)-Nvct(is,3)*Dvct(is,2)
@@ -816,6 +893,8 @@ c        c----------------------------c
             real(8) vn_slp(Nslp_mx,3) 
             real(8) refv_pk2i,refv_IVB
             real(8) IVB_ini(Nslp_mx)
+c            print*,'sub_get_param: ',crss0, c11, Adir
+            call param_temp_Austenite(temp_cur)
             Nslp               = N_slip
             STFei26            = Mstiff
             smdMi (1:Nslp,:,:) = Msmd
@@ -829,6 +908,7 @@ c        c----------------------------c
             refv_pk2i          = c44*1.d-6
             refv_IVB           = c44*1.d-6
             IVB_ini(1:Nslp)    = crss0 
+
             return
          endsubroutine
 
@@ -882,11 +962,12 @@ c-----------resolved shear stress and resistence
 c-----------shear rate, derivative of shear rate w.r.t. pk2i,IVB
             do is=1,N_slip
                IVB_eff(is)=IVB(is)+IVB_wcp(is)
-               dgmdt(is)=shrt0*(dabs(tau(is)-IVB_bk(is))/IVB_eff(is))
-     &                          **pwfl*dsign(1.d0,(tau(is)-IVB_bk(is)))
+               dgmdt(is)=shrt0*dexp(-Qact/R_gas/temp_cur)*(dabs(tau(is)-IVB_bk(is))/
+     &                   IVB_eff(is))**pwfl*dsign(1.d0,(tau(is)-IVB_bk(is)))
                if(Iexp_loc/=1)then
                   ddgmdt_dtau(is)=pwfl/IVB_eff(is)*shrt0
-     &            *(dabs(tau(is)-IVB_bk(is))/IVB_eff(is))**(pwfl-1)
+     &            *(dabs(tau(is)-IVB_bk(is))/IVB_eff(is))**(pwfl-1)*
+     &            dexp(-Qact/R_gas/temp_cur)
                   ddgmdt_dIVB(is)=-pwfl*dgmdt(is)/IVB_eff(is)
                endif
             enddo
@@ -916,31 +997,30 @@ c--------evolution rate, derivative of evolution rate w.r.t. pk2i,IVB
       
 c +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 c +                                                                         +
-c +   Material library: #5==>Superalloy                                     +
+c +   Material library: #5==>Superalloy                 +
 c +                                                                         +
 c +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
       module mod_Superalloy
+         use GlobalValue
          implicit none
          integer,parameter:: N_slip = 60
-         real(8),parameter:: c11    = 216.2d3
-         real(8),parameter:: c12    = 152.9d3
-         real(8),parameter:: c44    = 98.5d3
+         real(8),parameter:: c11    = 193.7d3
+         real(8),parameter:: c12    = 135.3d3
+         real(8),parameter:: c44    = 93.5d3     
          real(8),parameter:: shrt0m  = 5.0d9
-         real(8),parameter:: shrt0p  = 2.0d15
+         real(8),parameter:: shrt0p  = 2.0d15 
          real(8),parameter:: shrt0c  = 6.0d12 
          real(8),parameter:: Qactm   = 350.d3
          real(8),parameter:: Qactp   = 500.d3
-         real(8),parameter:: Qactc   = 430.d3
-         real(8),parameter:: Tempe  = 1323
-         real(8),parameter:: Rg    = 8.314
-         real(8),parameter:: pwfl   = 5.5d0
-         real(8),parameter:: pwhd   = 0.05d0
-         real(8),parameter:: crssm0  = 60.d0
-         real(8),parameter:: crssp0  = 500.d0
-         real(8),parameter:: crssc0  = 100.d0
+         real(8),parameter:: Qactc   = 430.d3  
+         real(8),parameter:: pwfl   = 10.5d0  !orginal:5.5d0
+         real(8),parameter:: pwhd   = 0.05d0         
+         real(8),parameter:: crssm0  = 60.d0   !orginal:60.d0
+         real(8),parameter:: crssp0  = 500.d0  !orginal:500.d0
+         real(8),parameter:: crssc0  = 200.d0
          real(8),parameter:: crss_oro  = 60.d0
-         real(8),parameter:: crsss  = 800.d0
-         real(8),parameter:: hdrt0  = 60.d0
+         real(8),parameter:: crsss  = 800.d0   !orginal:800.d0
+         real(8),parameter:: hdrt0  = 60.d0   !orginal:60.d0
          real(8),parameter:: c_cpl   = 1.d0
          real(8),parameter:: c_oth   = 1.4d0
          real(8),parameter:: c_cplc   = 5.d0
@@ -982,17 +1062,18 @@ c
             Nvct(25:36,:)=Nvct( 1:12,:)
 
             Dvct(37,:)=[ 2,  1,  1]
-	    Dvct(38,:)=[-1, -2,  1]
-	    Dvct(39,:)=[-1,  1, -2]
-	    Dvct(40,:)=[-2,  1,  1]
-	    Dvct(41,:)=[ 1, -2,  1]
-	    Dvct(42,:)=[ 1,  1, -2]
-	    Dvct(43,:)=[-2,  1, -1]
-	    Dvct(44,:)=[ 1, -2, -1]
-	    Dvct(45,:)=[ 1,  1,  2]
-	    Dvct(46,:)=[-2, -1,  1]
-	    Dvct(47,:)=[ 1,  2,  1]
-	    Dvct(48,:)=[ 1, -1, -2]
+        Dvct(38,:)=[-1, -2,  1]
+        Dvct(39,:)=[-1,  1, -2]
+        Dvct(40,:)=[-2,  1,  1]
+        Dvct(41,:)=[ 1, -2,  1]
+        Dvct(42,:)=[ 1,  1, -2]
+        Dvct(43,:)=[-2,  1, -1]
+        Dvct(44,:)=[ 1, -2, -1]
+        Dvct(45,:)=[ 1,  1,  2]
+        Dvct(46,:)=[-2, -1,  1]
+        Dvct(47,:)=[ 1,  2,  1]
+        Dvct(48,:)=[ 1, -1, -2]
+c            Dvct(37:48,:)=Dvct( 1:12,:)
             Nvct(37:48,:)=Nvct( 1:12,:)
 
             Dvct(49,:)=[-1,  1,  0]; Nvct(49,:)=[0, 0, 1]
@@ -1194,31 +1275,27 @@ c-----------shear rate, derivative of shear rate w.r.t. pk2i,IVB
             do is=1,36
                IVB_eff(is)=IVB(is)+crss_oro-IVB_cl(is)          
 
-               dgmdt(is)=shrt0m*dexp(-Qactm/Rg/Tempe)
+               dgmdt(is)=shrt0m*dexp(-Qactm/R_gas/temp_cur)
      &          *(dabs(tau(is)-IVB_bk(is))/IVB_eff(is))
      &          **pwfl*dsign(1.d0,(tau(is)-IVB_bk(is)))
                if(Iexp_loc/=1)then
                   ddgmdt_dtau(is)=pwfl/IVB_eff(is)*shrt0m
      &            *(dabs(tau(is)-IVB_bk(is))/IVB_eff(is))**(pwfl-1)
-     &            *dexp(-Qactm/Rg/Tempe)
+     &            *dexp(-Qactm/R_gas/temp_cur)
                   ddgmdt_dIVB(is)=-pwfl*dgmdt(is)/IVB_eff(is)
                endif
             enddo
 
             do is=37,48
-               if (Tempe.ge.1173) then
-               IVB_eff(is)=IVB(is)-IVB_m(is)
-               else
-               IVB_eff(is)=IVB(is)-IVB_m(is)+IVB_kw(is)
-               endif         
+               IVB_eff(is)=IVB(is)-IVB_m(is)!+IVB_kw(is)          
 
-               dgmdt(is)=shrt0p*dexp(-Qactp/Rg/Tempe)
+               dgmdt(is)=shrt0p*dexp(-Qactp/R_gas/temp_cur)
      &          *(dabs(tau(is)-IVB_bk(is))/IVB_eff(is))
      &          **pwfl*dsign(1.d0,(tau(is)-IVB_bk(is)))
                if(Iexp_loc/=1)then
                   ddgmdt_dtau(is)=pwfl/IVB_eff(is)*shrt0p
      &            *(dabs(tau(is)-IVB_bk(is))/IVB_eff(is))**(pwfl-1)
-     &            *dexp(-Qactp/Rg/Tempe)
+     &            *dexp(-Qactp/R_gas/temp_cur)
                   ddgmdt_dIVB(is)=-pwfl*dgmdt(is)/IVB_eff(is)
                endif
 
@@ -1226,11 +1303,11 @@ c-----------shear rate, derivative of shear rate w.r.t. pk2i,IVB
 
             do is=49,60
                IVB_eff(is)=IVB(is)         
-               dgmdt(is)=shrt0c*dexp(-Qactc/Rg/Tempe)
+               dgmdt(is)=shrt0c*dexp(-Qactc/R_gas/temp_cur)
      &            *(dabs(tau(is))/IVB_eff(is))**pwfl*dsign(1.d0,tau(is))
                if(Iexp_loc/=1)then
                ddgmdt_dtau(is)=pwfl/IVB_eff(is)*shrt0c
-     &       *(dabs(tau(is))/IVB_eff(is))**(pwfl-1)*dexp(-Qactc/Rg/Tempe)
+     &       *(dabs(tau(is))/IVB_eff(is))**(pwfl-1)*dexp(-Qactc/R_gas/temp_cur)
                ddgmdt_dIVB(is)=-pwfl*dgmdt(is)/IVB_eff(is)
                endif
             enddo
@@ -1286,6 +1363,7 @@ c +   Material library: #6==>Nickel                                         +
 c +                                                                         +
 c +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
       module mod_Nickel
+         use GlobalValue
          implicit none
          integer,parameter:: N_slip = 12
          real(8),parameter:: c11    = 176.d3
@@ -1293,8 +1371,6 @@ c +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
          real(8),parameter:: c44    = 64.d3
          real(8),parameter:: shrt0  = 5.d1
          real(8),parameter:: Qact   = 96.d3
-         real(8),parameter:: Tempe  = 1073
-         real(8),parameter:: Rg     = 8.314
          real(8),parameter:: pwfl   = 3.0d0
          real(8),parameter:: pwhd   = 0.05d0
          real(8),parameter:: crss0  = 50.d0
@@ -1482,14 +1558,12 @@ c-----------resolved shear stress and resistence
 c-----------shear rate, derivative of shear rate w.r.t. pk2i,IVB
             do is=1,N_slip
                IVB_eff(is)=IVB(is)
-               dgmdt(is)=shrt0*dexp(-Qact/Rg/Tempe)
-     &          *(dabs(tau(is)-IVB_bk(is))/IVB_eff(is))
-     &          **pwfl*dsign(1.d0,(tau(is)-IVB_bk(is)))
+               dgmdt(is)=shrt0*exp(-Qact/R_gas/temp_cur)
+     &      *(dabs(tau(is))/IVB_eff(is))**pwfl*dsign(1.d0,tau(is))
                if(Iexp_loc/=1)then
-                  ddgmdt_dtau(is)=pwfl/IVB_eff(is)*shrt0
-     &            *(dabs(tau(is)-IVB_bk(is))/IVB_eff(is))**(pwfl-1)
-     &            *dexp(-Qact/Rg/Tempe)
-                  ddgmdt_dIVB(is)=-pwfl*dgmdt(is)/IVB_eff(is)
+             ddgmdt_dtau(is)=pwfl/IVB_eff(is)*shrt0*(dabs(tau(is))
+     &                 /IVB_eff(is))**(pwfl-1)*exp(-Qact/R_gas/temp_cur)
+             ddgmdt_dIVB(is)=-pwfl*dgmdt(is)/IVB_eff(is)
                endif
             enddo
 
@@ -1517,7 +1591,7 @@ c--------evolution rate, derivative of evolution rate w.r.t. pk2i,IVB
 
 ! +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 ! +                                                               +
-! +   Module of total matierls                                    +
+! +   Module of total materials                                    +
 ! +                                                               +
 ! +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
       module mod_alloys
@@ -1535,6 +1609,7 @@ c--------evolution rate, derivative of evolution rate w.r.t. pk2i,IVB
          subroutine mod_alls_ini(IB1,IB2)
             implicit none
             integer IB1(9),IB2(9)
+
             call sub_constant_ini_Aluminum(IB1,IB2)
             call sub_constant_ini_Copper(IB1,IB2)
             call sub_constant_ini_Ferrite(IB1,IB2)
@@ -1543,6 +1618,18 @@ c--------evolution rate, derivative of evolution rate w.r.t. pk2i,IVB
             call sub_constant_ini_Nickel(IB1,IB2)
             return
          endsubroutine
+
+         ! +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+         ! +   Set temperature-dependent material parameters               +
+         ! +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+         subroutine set_param_temp(temp)
+            implicit none
+            real(8) temp
+
+            call param_temp_Austenite(temp)
+            return
+         end subroutine set_param_temp
+
          ! +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
          ! +   Get material parameters for for (ie, ig)                    +
          ! +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -1564,6 +1651,7 @@ c--------evolution rate, derivative of evolution rate w.r.t. pk2i,IVB
             real(8) vn_slp(Nslp_mx,3) 
             real(8) refv_pk2i,refv_IVB
             real(8) IVB_ini(Nslp_mx)
+
             if(ialloy==1)then 
                call sub_get_parameter_Aluminum(
      &              Nslp_mx,Nslp,STFei26,
@@ -1630,6 +1718,7 @@ c--------evolution rate, derivative of evolution rate w.r.t. pk2i,IVB
             real(8) dIVBdt(Nslp_mx)
             real(8) ddIVBdt_ddgmdt(Nslp_mx,Nslp_mx)
             real(8) ddIVBdt_dIVB(Nslp_mx,Nslp_mx)
+
             if(ialloy==1)then
                call sub_flow_harden_Aluminum(
      &              Nslp_mx,Iexp_loc,IVB_wcp,IVB_bk,tau,IVB,
@@ -1657,15 +1746,14 @@ c--------evolution rate, derivative of evolution rate w.r.t. pk2i,IVB
      &              dIVBdt,ddIVBdt_ddgmdt,ddIVBdt_dIVB,ising)
             elseif(ialloy==6)then
                call sub_flow_harden_Nickel(
-     &              Nslp_mx,Iexp_loc,IVB_wcp,IVB_bk,tau,IVB,
+     &              Nslp_mx,Iexp_loc,IVB_wcp,tau,IVB,IVB_bk,
      &              dgmdt,ddgmdt_dtau,ddgmdt_dIVB,
      &              dIVBdt,ddIVBdt_ddgmdt,ddIVBdt_dIVB,ising)
             else
-               print*,'no this material',ialloy
+               print*,'Unknown material ',ialloy
                call xit
             endif         
             return
          endsubroutine
       endmodule mod_alloys
-
 

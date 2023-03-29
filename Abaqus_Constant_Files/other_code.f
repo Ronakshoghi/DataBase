@@ -6,10 +6,7 @@ cccccccccccccccccccccccccccccccccccccccccccc
       real(8) det
       real(8) vv(3)
       real(8) Mx(3,3),rm(3,3),um(3,3)
-      real(8) pi,r2g,g2r
-      pi=dacos(-1.d0)
-      r2g=180/pi
-      g2r=pi/180
+
 cccccccccccccccccccccccccccccccccccccccccccc
       ising_1=0
 !      call PDECOMPOSITION(Mx,Um,Rm,ising_1)
@@ -30,17 +27,16 @@ ccccccccccccccccccccccccccccccccccccccccccccccc
       implicit none
       real(8) v1(3),v2(3),ang,x1,x2
       real(8) QM1(3,3),QM2(3,3),dQM(3,3)
-      real(8) pi,r2g,g2r
-      pi=dacos(-1.d0)
-      r2g=180/pi
-      g2r=pi/180
+      real(8) pi2
+      pi2 = datan(1.0d0)*2.0d0
+
       call icams_Eang2Q(v1(1),v1(2),v1(3),QM1)
       call icams_Eang2Q(v2(1),v2(2),v2(3),QM2)
       dQM=matmul(QM2,transpose(QM1))
       x1=dQM(1,1)+dQM(2,2)+dQM(3,3)
       x2=(x1-1.d0)/2
       if(dabs(x2)>1.d0)x2=1.d0*sign(1.d0,x2)
-      ang=dabs(pi/2-dasin(x2)) *r2g
+      ang=dabs(pi2-dasin(x2))
       return
       end
 
@@ -87,21 +83,14 @@ c     rotate from X[100],Y[010],Z[001] to v1,v2,v3
 ccccccccccccccccccccccccccccccccccccccccccccccccccc
       implicit none
       real(8) QM(3,3)
-      real(8) p1,p,p2,xp1,xp,xp2
+      real(8) p1,p,p2
       real(8) c1,c,c2,s1,s,s2
-      real(8) pi,r2g,g2r
-      pi=dacos(-1.d0)
-      r2g=180/pi
-      g2r=pi/180
-      xp1=p1*g2r
-      xp =p *g2r
-      xp2=p2*g2r
-      c1=dcos(xp1)
-      s1=dsin(xp1)
-      c =dcos(xp )
-      s =dsin(xp )
-      s2=dsin(xp2)
-      c2=dcos(xp2)
+      c1=dcos(p1)
+      s1=dsin(p1)
+      c =dcos(p )
+      s =dsin(p )
+      s2=dsin(p2)
+      c2=dcos(p2)
       QM(1,1)=+c1*c2-s1*s2*c
       QM(1,2)=+s1*c2+c1*s2*c
       QM(1,3)=+s2*s
@@ -121,11 +110,10 @@ cccccccccccccccccccccccccccccccccccccccccccccccccc
       real(8) QM(3,3)
       real(8) phi1,PHI,phi2
       real(8) sqhkl,squvw,sqhk,val
-      real(8) pi,r2g,g2r,Tol
+      real(8) Tol
       Tol=1.d-15
-      pi=dacos(-1.d0)
-      r2g=180/pi
-      g2r=pi/180
+
+
 c---------------------------------------------
 c
 c             v1   v2    v3
@@ -196,88 +184,9 @@ c           phi1=2*pi-dacos(val)
             phi1=-dacos(val)
          endif
       endif
-      phi1=phi1*r2g
-      PHI=PHI*r2g
-      phi2=phi2*r2g
+
       return
       end
-
-
-
-cccccccccccccccccccccccccccccccccccccccccccccccccc
-      subroutine icams_Q2Eang_old(QM,phi1,PHI,phi2)
-cccccccccccccccccccccccccccccccccccccccccccccccccc
-      implicit none
-      real(8) QM(3,3)
-      real(8) phi1,PHI,phi2,x1,x2,x3
-      real(8) pi,r2g,g2r,Tol
-      Tol=1.d-15
-      pi=dacos(-1.d0)
-      r2g=180/pi
-      g2r=pi/180
-c---------------------------------------------
-c            v1   v2=v3xv1    v3
-c
-c           | u   v2_1    h  |
-c     QM =  | v   v2_2    k  |    
-c           | w   v2_3    l  | 
-c
-c---------------------------------------------
-
-      x1=dsqrt(QM(1,1)**2+QM(2,1)**2+QM(3,1)**2)
-      x2=dsqrt(QM(1,2)**2+QM(2,2)**2+QM(3,2)**2)
-      x3=dsqrt(QM(1,3)**2+QM(2,3)**2+QM(3,3)**2)
-      QM(:,1)=QM(:,1)/x1
-      QM(:,2)=QM(:,2)/x1
-      QM(:,3)=QM(:,3)/x1
-
-      x1=QM(3,3)
-      if(dabs(x1)>1.d0)x2=1.d0*sign(1.d0,x1)
-
-      PHI=dacos(x2)
-
-      if(PHI<Tol)then
-         phi2=0.d0
-
-         x1=QM(1,1)
-         if(dabs(x1)>1.d0)x2=1.d0*sign(1.d0,x1)
-
-         if(QM(1,2)>=0.d0)then
-            phi1=dacos(x2)
-         else
-c           phi1=2*pi-dacos(val)
-            phi1=-dacos(x2)
-         endif
-      else
-
-         x1=QM(2,3)/dsin(PHI)
-         if(dabs(x1)>1.d0)x2=1.d0*sign(1.d0,x1)
-
-         if(QM(1,3)>=0.d0) then
-            phi2=dacos(x2)
-         else
-c           phi2=2*pi-dacos(val)
-            phi2=-dacos(x2)
-         endif
-
-         x1=-QM(3,2)/dsin(PHI)
-         if(dabs(x1)>1.d0)x2=1.d0*sign(1.d0,x1)
-
-         if(QM(3,1) >= 0.d0) then
-            phi1=dacos(x2)
-         else
-c           phi1=2*pi-dacos(val)
-            phi1=-dacos(x2)
-         endif
-      endif
-      phi1=phi1*r2g
-      PHI=PHI*r2g
-      phi2=phi2*r2g
-      return
-      end
-
-
-
 
 cccccccccccccccccccccccccccccccccccccccccccc
       subroutine icams_angax2QM(ang,u,v,w,QM)
@@ -285,10 +194,6 @@ cccccccccccccccccccccccccccccccccccccccccccc
       implicit none
       real(8) QM(3,3)
       real(8) s,c,u2,v2,w2,ang,u,v,w,x1
-      real(8) pi,r2g,g2r
-      pi=dacos(-1.d0)
-      r2g=180/pi
-      g2r=pi/180
 
       x1=dsqrt(u**2+v**2+w**2)
       u2=u/x1
@@ -401,13 +306,16 @@ c100   format(48e20.8)
 
 
 C******************************************** 
-      subroutine gaussj(A,n,B,ising)
+      subroutine gaussj(Amat,n,Bmat,ising)
 C******************************************** 
       implicit none
-      integer   n,ising
+      integer, intent(in) :: n
+      integer, intent(out) :: ising
+      real(8), intent(in) :: Amat(n,n)
+      real(8), intent(out) ::  Bmat(n,n)
       integer   i,icol,irow,j,k,l,ll,i1,i2
       integer   indxc(n),indxr(n),ipiv(n)
-      real(8)   A(n,n),B(n,n),c(n,n),vx(n)
+      real(8)   vx(n)
       real(8)   big,dum,pivinv,x1,x2,x3
 c-------------------------------------------
 c      write(6,*) 'coming to jd'
@@ -415,7 +323,7 @@ c      call pm(A,3,3)
 c      call flush(6)
 
       ising=0
-      C=A
+      Bmat=Amat
       ipiv=0
 c-----loop for the pivot procedures, from 1 to n
       do i=1,n
@@ -423,8 +331,8 @@ c-----loop for the pivot procedures, from 1 to n
          do j=1,n
          do k=1,n
             if(ipiv(j).ne.1 .and. ipiv(k)==0)then
-               if(dabs(a(j,k)).ge.big)then
-                  big=dabs(a(j,k))
+               if(dabs(Bmat(j,k)).ge.big)then
+                  big=dabs(Bmat(j,k))
                   irow=j
                   icol=k
                endif
@@ -439,13 +347,13 @@ c              call flush(6)
          enddo
          enddo
 c--------check whether the pivot element is zero or not
-         if(a(irow,icol)==0.d0)then
+         if(big.le.1.0d-10)then
 c	      print*,'sigular matrix in gauss_jordan'
 c	      print*,'indices is:', irow,icol
 c           write(6,*)'sigular matrix in gauss_jordan'
 c           write(6,*)'indices is:', irow,icol
 c           call flush(6)
-            ising=1
+            ising=2
             return
          endif
 c-------------------------------------------------------
@@ -460,19 +368,19 @@ c--------record the row and collum number for ith pivot element
          indxc(i)=icol
 c--------change pivot element to diagonal position
          if(irow.ne.icol)then
-            vx=a(irow,:)
-            a(irow,:)=a(icol,:)
-            a(icol,:)=vx
+            vx=Bmat(irow,:)
+            Bmat(irow,:)=Bmat(icol,:)
+            Bmat(icol,:)=vx
          endif
-c--------eliminate the elements besides a(icol,icol)
-         pivinv=1.d0/a(icol,icol)
-         a(icol,icol)=1.d0
-         a(icol,:)=a(icol,:)*pivinv 
+c--------eliminate the elements besides Bmat(icol,icol)
+         pivinv=1.d0/Bmat(icol,icol)
+         Bmat(icol,icol)=1.d0
+         Bmat(icol,:)=Bmat(icol,:)*pivinv 
          do i2=1,n
             if(i2.ne.icol)then
-               dum=a(i2,icol)
-               a(i2,icol)=0.d0
-               a(i2,:)=a(i2,:)-a(icol,:)*dum
+               dum=Bmat(i2,icol)
+               Bmat(i2,icol)=0.d0
+               Bmat(i2,:)=Bmat(i2,:)-Bmat(icol,:)*dum
             endif
          enddo
       enddo
@@ -481,13 +389,11 @@ c-----after maximum pivot strategy elimination
 c-----rearrage the left matrix
       do l=n,1,-1
          if(indxr(l).ne.indxc(l))then
-            vx=a(:,indxr(l))
-            a(:,indxr(l))=a(:,indxc(l))
-            a(:,indxc(l))=vx
+            vx=Bmat(:,indxr(l))
+            Bmat(:,indxr(l))=Bmat(:,indxc(l))
+            Bmat(:,indxc(l))=vx
          endif
       enddo
-      B=A
-      A=C
 
       RETURN
       END
@@ -524,7 +430,6 @@ c-----3st invariant for tensor U
      1	  4.0*C1**3.0*C3 - 18.0 * C1*C2*C3 + 27.0 * C3**2.0)
 
       IF(X2<0)X2=0
-      F1=X1+dsqrt(X2)
       IFLAG1=0
       IF(F1<0)IFLAG1=1
       F2=X1-dsqrt(X2)
