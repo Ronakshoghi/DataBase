@@ -1,0 +1,58 @@
+** ----------------------------------------------------------------
+** BOUNDARY CONDITIONS
+**
+*Boundary
+V1,1
+V1,2
+V1,3
+V2,2
+H1,1
+V4,3
+**
+**-------------------------------------------------------------------
+**
+** STEP: Loading
+**
+*Step, name=Loading, nlgeom=YES, inc=500000, unsymm=YES, solver=ITERATIVE
+*Static
+1, 250, 1e-6, 1
+**
+**
+*CONTROLS, PARAMETER=TIME INCREMENTATION
+35, 50, 9, 50, 28, 5, 12, 45
+**
+*CONTROLS, PARAMETERS=LINE SEARCH
+10
+**Originally that was SOLVER CONTROL
+*SOLVER CONTROL
+1e-5,200,
+**
+** BOUNDARY CONDITIONS
+**
+** LOADS
+**
+** Name: Load Type: Stress BC
+*Cload
+V2,1, -0.3752356825122646
+V4,2, -0.5460770134887019
+H1,3, 53.75659709123606
+H1,2, 0.0
+V2,3, 0.0
+V4,1, 0.0
+**
+** OUTPUT REQUESTS
+**
+**
+** FIELD OUTPUT: F-Output-1
+**
+*Output, field
+*Node Output
+U,RF,CF,COORD
+*Element Output, directions=YES
+SDV156,SDV157,SDV158
+SDV159,SDV160,SDV161
+S,LE
+** HISTORY OUTPUT: H-Output-1
+**
+**Output, history, variable=PRESELECT
+*End Step
