@@ -25,6 +25,7 @@ def Create_Key_Folder(Keys_Folder_Name, CP):
 def Create_Sub_Folder(Key):
     Current_Path = os.getcwd()
     Abaqus_Constant_Files_Path = "{}/Abaqus_Constant_Files".format(Current_Path)
+    Abaqus_Constant_Files_Path = "{}/Abaqus_Constant_Files".format(Current_Path)
     Create_Key_Folder(Key, Current_Path)
     folders = ['inputs', 'results']
     for folder in folders:

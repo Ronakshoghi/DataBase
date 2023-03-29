@@ -18,7 +18,7 @@ F = sigma 12
 
 1 = Positive
 0 = Zero
-2 = Negative
+-1 = Negative
 
 """
 import hashlib
@@ -38,15 +38,14 @@ def Key_Generator(Load_Case):
         if load == 0:
             Load_Evaluation.append(0)
         if load < 0:
-            Load_Evaluation.append(2)
+            Load_Evaluation.append(-1)
 
     Load_String = ''.join(str(e) for e in Load_Case)
     Load_Hash = hashlib.sha256(Load_String.encode('utf-8')).hexdigest()
-    Tx="Rnd"
     with open(Orientation_File_Path) as f:
         data = f.read()
         Orientation_Hash = hashlib.sha256(data.encode('utf-8')).hexdigest()
-    Key = "Us_A{}B{}C{}D{}E{}F{}_{}_{}_Tx_{}".format(Load_Evaluation[0],Load_Evaluation[1],Load_Evaluation[2],Load_Evaluation[3],Load_Evaluation[4],Load_Evaluation[5],Load_Hash[:5],Orientation_Hash[:5],Tx)
+    Key = "A{}_B{}_C{}_D{}_E{}_F{}_{}_{}".format(Load_Evaluation[0],Load_Evaluation[1],Load_Evaluation[2],Load_Evaluation[3],Load_Evaluation[4],Load_Evaluation[5],Load_Hash[:5],Orientation_Hash[:5])
     return (Key)
 
 

@@ -45,25 +45,10 @@ def Meta_reader(Key):
     lines = Input_File.readlines()
     Abaqus_Version = (lines[2].split(':'))[1]
     Meta['Abaqus-Version'] = Abaqus_Version
-    Orientation_File = open('Orientation.txt')
-    phi1 = []
-    phi2 = []
-    phi3 = []
-    Orientation = {}
-    lines = Orientation_File.readlines()[1:]
-    x = int(len(lines)/9)
-    for line in lines:
-        phi1.append(float(line.split('  ')[0]))
-        phi2.append(float(line.split('  ')[1]))
-        phi3.append(float(line.split('  ')[2]))
-    Orientation['phi1'] = phi1
-    Orientation['phi2'] = phi2
-    Orientation['phi3'] = phi3
-    Meta['Orientation'] = Orientation
-    RVE_Size = "{}*{}*{}".format(x, x, x)
-    Meta['RVE_Size'] = RVE_Size
     os.chdir(Current_Path)
     return (Meta)
+
+
 def Meta_Writer (key, json_file):
     Meta = Meta_reader(key)
     with open(json_file, 'w') as output_file:

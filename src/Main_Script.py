@@ -43,19 +43,19 @@ for counter, load in enumerate(loads):
     else:
         print("The key was not found in JSON file")
         KFC.Create_Sub_Folder(Key)
-        scaling_factor = 8
+        scaling_factor = 42
         print ("initial load: {}".format(load))
         scaled_load = load * scaling_factor
         Max_Strain = 0
         itertation = 0
-        Lower_Strain_Limit = 0.0001
-        Upper_Strain_Limit = 100
+        Lower_Strain_Limit = 0.027
+        Upper_Strain_Limit = 0.033
         while (Upper_Strain_Limit < Max_Strain or Lower_Strain_Limit > Max_Strain ):
             itertation += 1
             print ("scaling factor {} -> applied load in iteration {}: {}".format(scaling_factor, itertation, scaled_load))
             LC.Load_File_Generator(scaled_load, Key)
             GG.Abaqus_Input_Generator(Key)
-            AR.Abaqus_Runner(Key, 8)
+            AR.Abaqus_Runner(Key, 4)
             Max_Strain = SRC.Max_Strain_Finder(Key)
             print ("Max Strain: {}".format(Max_Strain))
             if Max_Strain < Lower_Strain_Limit:
@@ -71,15 +71,16 @@ for counter, load in enumerate(loads):
                              "Initial_Load": load.tolist(),
                              "Scaling_Factor": scaling_factor,
                              "Applied_Load": scaled_load.tolist(),
-                             "Max_Total_Strain": Max_Strain,
+                             "Max_Strain": Max_Strain,
                              "Results": RP.Results_Reader(Key)}
+        if counter ==10:
+            break
 
-    DH.Json_Database_Creator(Results_Dict, "Data_Base_Updated.json")
-# "Meta_Data": MR.Meta_reader(Key),
+DH.Json_Database_Creator(Results_Dict, "Data_Base_Updated.json")
+
 "Post Processing"
 # Keys = Data_Base.keys()
 # Desired_Keys = KP.Key_Finder(Keys, [1, 1, 1, 0, 0, 0])
 # Found_Keys_Name = KP.Found_Keys_Generator(Desired_Keys)
 # for Key in Found_Keys_Name:
 #     print (Data_Base[Key]["Applied_Load"])
-
