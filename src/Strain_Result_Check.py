@@ -8,14 +8,19 @@ Time: 15:08
 import os
 from numpy import genfromtxt
 
-def Max_Strain_Finder (Key):
 
-    Current_Path = os.getcwd()
-    Keys_Path ="{}/Keys".format(Current_Path)
-    os.chdir(Keys_Path)
-    Key_path = os.path.abspath(Key)
-    Key_Results_Path = "{}/results".format(Key_path)
-    os.chdir(Key_Results_Path)
-    Strains = genfromtxt('E.out', delimiter=' ')
-    os.chdir(Current_Path)
-    return (max(Strains))
+def max_strain_finder(key, cp_code):
+    current_path = os.getcwd()
+    keys_path = "{}/Keys".format(current_path)
+    os.chdir(keys_path)
+    key_path = os.path.abspath(key)
+    key_results_path = "{}/results".format(key_path)
+    os.chdir(key_results_path)
+    if cp_code == 'abaqus':
+        strains = genfromtxt('E.out', delimiter=' ')
+    elif cp_code =='openphase':
+        strains = genfromtxt('{}.txt'.format(key), delimiter=';', skip_header=1)[:, -2]
+    else:
+        raise ValueError("cp_code {code} not valid. Must be abaqus or openphase.".format(code=cp_code))
+    os.chdir(current_path)
+    return max(strains)
