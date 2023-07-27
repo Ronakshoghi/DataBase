@@ -10,35 +10,46 @@ import os
 import shutil
 
 
-def Create_Key_Folder(Keys_Folder_Name, CP):
-    Keys_Path = "{}/Keys".format(CP)
-    os.chdir(Keys_Path)
+def create_key_folder(keys_folder_name, cp):
+    keys_path = "{}/Keys".format(cp)
+    if not os.path.exists(keys_path):
+        os.mkdir(keys_path)
+    os.chdir(keys_path)
     try:
-        if not os.path.exists(Keys_Folder_Name):
-            os.makedirs(Keys_Folder_Name)
+        if not os.path.exists(keys_folder_name):
+            os.makedirs(keys_folder_name)
     except OSError:
-        print ('Error: Creating directory. ' +  Keys_Folder_Name)
+        print('Error: Creating directory {}.'.format(keys_folder_name))
 
 
 # a function to create 2 subfolder of inputs and results for each key and copy the constant abaqus file into the input.
 
-def Create_Sub_Folder(Key):
-    Current_Path = os.getcwd()
-    Abaqus_Constant_Files_Path = "{}/Abaqus_Constant_Files".format(Current_Path)
-    Create_Key_Folder(Key, Current_Path)
+def create_sub_folder(key, cp_code='abaqus'):
+    current_path = os.getcwd()
+    if cp_code == 'abaqus':
+        constant_files_path = "{}/Abaqus_Constant_Files".format(current_path)
+    elif cp_code == 'openphase':
+        constant_files_path = "{}/OpenPhase_Constant_Files".format(current_path)
+    else:
+        raise ValueError("cp_code {code} not valid. Must be abaqus or openphase.".format(code=cp_code))
+    create_key_folder(key, current_path)
     folders = ['inputs', 'results']
     for folder in folders:
         try:
-            if not os.path.exists(os.path.join(Key, folder)):
-                os.makedirs(os.path.join(Key, folder))
+            if not os.path.exists(os.path.join(key, folder)):
+                os.makedirs(os.path.join(key, folder))
         except OSError:
-            print('Error: Creating directory. ' + os.path.join(Key, folder))
-    Current_Path_1 = os.path.abspath(Key)
-    Key_Inputs_Path = "{}/inputs".format(Current_Path_1)
-    for file_name in os.listdir(Abaqus_Constant_Files_Path):
-        source = os.path.join(Abaqus_Constant_Files_Path, file_name)
-        destination = os.path.join(Key_Inputs_Path, file_name)
-        if os.path.isfile(source):
-            shutil.copy(source, destination)
-    os.chdir(Current_Path)
+            print('Error: Creating directory. ' + os.path.join(key, folder))
+    current_path_1 = os.path.abspath(key)
+    key_inputs_path = "{}/inputs".format(current_path_1)
+    #TODO: Which are the OpenPhase files that need to be copied? Do I have constant files? Where are Temp Files copied?
+    if cp_code == 'abaqus':
+        for file_name in os.listdir(constant_files_path):
+            source = os.path.join(constant_files_path, file_name)
+            destination = os.path.join(key_inputs_path, file_name)
+            if os.path.isfile(source):
+                shutil.copy(source, destination)
+    elif cp_code =='openphase':
+        print('Current state: no constant files, all temporary.')
+    os.chdir(current_path)
 
