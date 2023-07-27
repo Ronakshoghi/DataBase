@@ -32,8 +32,7 @@ def Abaqus_Runner(Key, ncpu):
 def openphase_runner(key, t_timeout=300):
     print(key)
     current_path = os.getcwd() # home
-    simu_path = os.path.join(current_path, "Keys/{}/inputs".format(key))
-    res_path = os.path.join(current_path, "Keys/{}/results".format(key))
+    simu_path = os.path.join(current_path, "Keys/{}".format(key))
     command_make = "make SETTINGS=static"
     command_run = "./Matchbox {inputfile}".format(inputfile=key + ".opi")
 
@@ -53,10 +52,4 @@ def openphase_runner(key, t_timeout=300):
     except subprocess.TimeoutExpired:
         print("{loadcase} NOT CONVERGED".format(loadcase=key))
 
-    res_file = os.path.join(simu_path, "Results/{}.txt".format(key))
-    try:
-        shutil.move(res_file, os.path.join(res_path, '%s.txt' % key))
-
-    except OSError:
-        print('could not move openphase result to result dict')
 
