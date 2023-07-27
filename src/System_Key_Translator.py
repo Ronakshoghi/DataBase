@@ -13,7 +13,7 @@ import Database_Handler as DH
 import os
 
 
-def Key_Writer():
+def key_writer():
     "Pre-Processing"
 
     abspath = os.path.abspath(__file__)
@@ -23,26 +23,26 @@ def Key_Writer():
     loads = np.genfromtxt(load_cases)
     os.chdir('..')
 
-    Key_Dict = {}
+    key_dict = {}
 
     "Main Process"
     for counter, load in enumerate(loads):
-        Key = KG.Key_Generator(load)
-        Key_Dict[counter] = Key
+        key = KG.key_generator(load)
+        key_dict[counter] = key
 
-    with open ("System_Key_Translator.json", 'w') as output_file:
-        json.dump(Key_Dict, output_file)
-
-
-def Key_Merger():
-    Results_Dict_Main = DH.Read_Database_From_Json("System_Key_Translator_Main.json")
-    Results_Dict_Server = DH.Read_Database_From_Json("System_Key_Translator_Server.json")
-    Translation_Dict = {}
-    for key in Results_Dict_Main:
-        Translation_Dict[Results_Dict_Server[key]] = Results_Dict_Main[key]
-
-    with open ("System_Key_Translator.json", 'w') as output_file:
-        json.dump(Translation_Dict, output_file)
+    with open("System_Key_Translator.json", 'w') as output_file:
+        json.dump(key_dict, output_file)
 
 
-Key_Merger()
+def key_merger():
+    results_dict_main = DH.read_database_from_json("System_Key_Translator_Main.json")
+    results_dict_server = DH.read_database_from_json("System_Key_Translator_Server.json")
+    translation_dict = {}
+    for key in results_dict_main:
+        translation_dict[results_dict_server[key]] = results_dict_main[key]
+
+    with open("System_Key_Translator.json", 'w') as output_file:
+        json.dump(translation_dict, output_file)
+
+
+key_merger()
