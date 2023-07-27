@@ -11,16 +11,18 @@ the input required for this function is sigdata as text file.
 """
 import os
 
-def Load_File_Generator(load, key ):
-    Current_Path = os.getcwd()
-    Abaqus_Temp_Files_Path = "{}/Abaqus_Temp_Files".format(Current_Path)
-    remPart_File = "{}/remPart.inp".format(Abaqus_Temp_Files_Path)
-    Keys_Path ="{}/Keys".format(Current_Path)
-    os.chdir(Keys_Path)
-    Key_path = os.path.abspath(key)
-    Key_Inputs_Path = "{}/inputs".format(Key_path)
-    os.chdir(Key_Inputs_Path)
-    with open(remPart_File, 'r') as f:
+
+def load_file_generator(load, key):
+    current_path = os.getcwd()
+    temp_files_path = "{}/Abaqus_Temp_Files".format(current_path)
+    rem_part_file = "{}/remPart.inp".format(temp_files_path)
+
+    keys_path = "{}/Keys".format(current_path)
+    os.chdir(keys_path)
+    key_path = os.path.abspath(key)
+    key_inputs_path = "{}/inputs".format(key_path)
+    os.chdir(key_inputs_path)
+    with open(rem_part_file, 'r') as f:
         lines = f.readlines()
 
     with open("{}_remPart_file.inp".format(key), 'w+') as f:
@@ -30,7 +32,7 @@ def Load_File_Generator(load, key ):
             elif 'V4,2' in line:
                 f.write('V4,2, {}\n'.format(load[1]))
             elif 'H1,3' in line:
-                f.write('H1,3, {}\n'.format(load[2]))
+                f.write('H1,3, {}\n'.format(load[2]))  # I think in Abaqus we have to flip this axis!
             elif 'H1,2' in line:
                 f.write('H1,2, {}\n'.format(load[3]))
             elif 'V2,3' in line:
@@ -41,5 +43,5 @@ def Load_File_Generator(load, key ):
                 f.write(line)
         f.close()
 
-    os.chdir(Current_Path)
+    os.chdir(current_path)
     return None
