@@ -7,18 +7,17 @@ Time: 10:34
 
 A Function to create materials.inp file based on the generated geometry_Periodic.inp file and an orientation file
 provided in the Abaqus_temp_Files folder. The orienttaion file should be saved as Orientaion.txt in
-Abaqus_Temp_Files_Path
+abaqus_temp_files_path
 """
 
 import os
 import numpy as np
 
 
-def Material_Orientation_Generator(Abaqus_Temp_Files_Path):
-
-    Orientation_File_Path = "{}/Orientation.txt".format(Abaqus_Temp_Files_Path)
+def material_orientation_generator(Abaqus_Temp_Files_Path):
+    orientation_file_path = "{}/Orientation.txt".format(Abaqus_Temp_Files_Path)
     material_ID = 2
-    with open(Orientation_File_Path, 'r') as f:
+    with open(orientation_file_path, 'r') as f:
         orientations = np.genfromtxt(f, skip_header=1)
     file = "Material.inp"
     with open(os.path.join(Abaqus_Temp_Files_Path, file), 'w') as mr:
@@ -33,6 +32,7 @@ def Material_Orientation_Generator(Abaqus_Temp_Files_Path):
         mr.close()
         return None
 
-Current_Path = os.getcwd()
-Abaqus_Temp_Files_Path = "{}/Abaqus_Temp_Files".format(Current_Path)
-Material_Orientation_Generator(Abaqus_Temp_Files_Path)
+
+current_path = os.getcwd()
+Abaqus_Temp_Files_Path = "{}/Abaqus_Temp_Files".format(current_path)
+material_orientation_generator(Abaqus_Temp_Files_Path)
