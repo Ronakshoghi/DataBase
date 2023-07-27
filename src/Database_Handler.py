@@ -12,10 +12,12 @@ import json
 Thia function insert the loads from a file into database. 
 """
 
-def Read_Database_From_Json(json_file):
+
+def read_database_from_json(json_file):
     with open(json_file, 'r') as input_file:
         return json.load(input_file)
 
-def Json_Database_Creator(Results_Dict, json_file):
-    with open (json_file, 'w') as output_file:
-        json.dump(Results_Dict, output_file)
+
+def json_database_creator(results_dict, json_file):
+    with open(json_file, 'w') as output_file:
+        json.dump(results_dict, output_file)
