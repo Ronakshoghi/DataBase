@@ -38,8 +38,15 @@ def meta_reader(key, cp_code='abaqus', ori_file='Orientation.txt', ori_file_head
     keys_path = "{}/Keys".format(current_path)
     os.chdir(keys_path)
     key_path = os.path.abspath(key)
-    key_input_path = "{}/inputs".format(key_path)
-    key_results_path = "{}/results".format(key_path)
+    if cp_code == 'abaqus':
+        key_input_path = "{}/inputs".format(key_path)
+        key_results_path = "{}/results".format(key_path)
+    elif cp_code == 'openphase':
+        key_input_path = key_path
+        key_results_path = "{}/results".format(key_path)
+    else:
+        raise ValueError("cp_code {code} not valid. Must be abaqus or openphase.".format(code=cp_code))
+
     meta_dict['Inputs-Path'] = key_input_path
     meta_dict['Results-Path'] = key_results_path
     os.chdir(key_input_path)
