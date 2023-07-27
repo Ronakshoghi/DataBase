@@ -10,11 +10,11 @@ import Database_Handler as DC
 import itertools
 import Database_Handler as DH
 
-Translate_Dict = DH.Read_Database_From_Json("System_Key_Translator.json")
+Translate_Dict = DH.read_database_from_json("System_Key_Translator.json")
 
-Current_Dict_1 = DC.Read_Database_From_Json("Data_Base_Updated1.json")
-Current_Dict_2 = DC.Read_Database_From_Json("Data_Base_Updated2.json")
-Current_Dict_3 = DC.Read_Database_From_Json("Data_Base_Updated3.json")
+Current_Dict_1 = DC.read_database_from_json("Data_Base_Updated1.json")
+Current_Dict_2 = DC.read_database_from_json("Data_Base_Updated2.json")
+Current_Dict_3 = DC.read_database_from_json("Data_Base_Updated3.json")
 Final_Dic = {**Current_Dict_1, **Current_Dict_2, **Current_Dict_3}
 
 for key in list(Final_Dic.keys()):
