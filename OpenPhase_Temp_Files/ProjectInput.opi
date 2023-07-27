@@ -28,7 +28,7 @@ $dx             Grid Spacing                            : 0.00002
 $IWidth         Interface Width (in grid points)        : 1
 
 $Phase_0        Name of Phase 0                         : Testensite
-$DATADir		Name of TextData directory				: Results
+$DATADir		Name of TextData directory				: results
 
 @BoundaryConditions
 
