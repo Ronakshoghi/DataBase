@@ -33,23 +33,25 @@ def create_sub_folder(key, cp_code='abaqus'):
     else:
         raise ValueError("cp_code {code} not valid. Must be abaqus or openphase.".format(code=cp_code))
     create_key_folder(key, current_path)
-    folders = ['inputs', 'results']
-    for folder in folders:
-        try:
-            if not os.path.exists(os.path.join(key, folder)):
-                os.makedirs(os.path.join(key, folder))
-        except OSError:
-            print('Error: Creating directory. ' + os.path.join(key, folder))
-    current_path_1 = os.path.abspath(key)
-    key_inputs_path = "{}/inputs".format(current_path_1)
-    #TODO: Which are the OpenPhase files that need to be copied? Do I have constant files? Where are Temp Files copied?
+
     if cp_code == 'abaqus':
+        folders = ['inputs', 'results']
+        for folder in folders:
+            try:
+                if not os.path.exists(os.path.join(key, folder)):
+                    os.makedirs(os.path.join(key, folder))
+            except OSError:
+                print('Error: Creating directory. ' + os.path.join(key, folder))
+        current_path_1 = os.path.abspath(key)
+        key_inputs_path = "{}/inputs".format(current_path_1)
         for file_name in os.listdir(constant_files_path):
             source = os.path.join(constant_files_path, file_name)
             destination = os.path.join(key_inputs_path, file_name)
             if os.path.isfile(source):
                 shutil.copy(source, destination)
+
+    #TODO: Which are the OpenPhase files that need to be copied? Do I have constant files? Where are Temp Files copied?
     elif cp_code =='openphase':
-        print('Current state: no constant files, all temporary.')
+        print('Current state: no constant files, all temporary. I do not create subfolders "input" and "results".')
     os.chdir(current_path)
 
