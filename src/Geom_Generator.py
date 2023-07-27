@@ -95,8 +95,7 @@ def openphase_input_generator(load, key, n_grains_per_dir, elements_per_grain, o
     keys_path = "{}/Keys".format(current_path)
     os.chdir(keys_path)
     key_path = os.path.abspath(key)
-    key_inputs_path = "{}/inputs".format(key_path)
-    os.chdir(key_inputs_path)
+    os.chdir(key_path)
     with open(input_file, 'r') as f:
         lines = f.readlines()
     keywords_bc_types = ['$BCX', '$BCY', '$BCZ', '$BCYZ', '$BCXZ', '$BCXY']
