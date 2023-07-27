@@ -15,7 +15,7 @@ import Meta_reader as MR
 import Load_Creator as LC
 import Key_Folder_Creator as KFC
 import Geom_Generator as GG
-import Abaqus_Runner as AR
+import CP_Runner as AR
 import Strain_Result_Check as SRC
 import os
 import multiprocessing
@@ -25,33 +25,33 @@ def Main(sig):
     abspath = os.path.abspath(__file__)
     dname = os.path.dirname(abspath)
     os.chdir(dname)
-    Results_Dict = DH.Read_Database_From_Json("Data_Base.json")
+    Results_Dict = DH.read_database_from_json("Data_Base.json")
     load_cases = sig
     loads = np.genfromtxt(load_cases)
     Source_Path = os.getcwd()
     os.chdir('..')
     Current_Path = os.getcwd()
     for counter, load in enumerate(loads):
-        Key = KG.Key_Generator(load)
+        Key = KG.key_generator(load)
         if Key in Results_Dict.keys():
             continue
         else:
-            KFC.Create_Sub_Folder(Key)
+            KFC.create_sub_folder(Key)
             scaling_factor = 90
             scaled_load = load * scaling_factor
-            LC.Load_File_Generator(scaled_load, Key)
-            GG.Abaqus_Input_Generator(Key)
+            LC.load_file_generator(scaled_load, Key)
+            GG.abaqus_input_generator(Key)
             AR.Abaqus_Runner(Key, 4)
-            Max_Strain = SRC.Max_Strain_Finder(Key)
+            Max_Strain = SRC.max_strain_finder(Key, 'abaqus')
             # Insert Results to the Data Base
-            Results_Dict[Key] = {"Meta_Data": MR.Meta_reader(Key),
+            Results_Dict[Key] = {"Meta_Data": MR.meta_reader(Key),
                                  "Initial_Load": load.tolist(),
                                  "Scaling_Factor": scaling_factor,
                                  "Applied_Load": scaled_load.tolist(),
                                  "Max_Strain": Max_Strain,
-                                 "Results": RP.Results_Reader(Key)}
+                                 "Results": RP.results_reader(Key, 'abaqus')}
 
-        DH.Json_Database_Creator(Results_Dict, "Data_Base_Updated.json")
+        DH.json_database_creator(Results_Dict, "Data_Base_Updated.json")
 
 
 if __name__ == '__main__':
