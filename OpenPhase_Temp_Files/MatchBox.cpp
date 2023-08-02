@@ -122,13 +122,14 @@ int main(int argc, char *argv[])
             }
 
             // Write to result file OutFile in each timestep
+
+            if (RTC.WriteRawData())
+            {
             WriteStressStrain(PFCP, Phi, EP, RTC.tStep, RTC.SimulationTime, OutFile, EqStrain, EqStress);
-            // if (RTC.WriteRawData())
-            // {
             //     Phi.Write(RTC.tStep);
             //     PFCP.Write(RTC.tStep);
             //     EP.Write(RTC.tStep);
-            // }
+            }
             stressSumm+=stressIncrement;
             if (RTC.tStep == RTC.nSteps)
             {
