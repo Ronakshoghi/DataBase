@@ -89,7 +89,7 @@ def openphase_input_generator(load, key, n_grains_per_dir, elements_per_grain, o
     input_file = "{}/ProjectInput.opi".format(temp_files_path)
     cpp_file = "{}/MatchBox.cpp".format(temp_files_path)
     make_file = "{}/Makefile".format(temp_files_path)
-
+    n_grains_per_dir = int(n_grains_per_dir*elements_per_grain**(1/3))
 
     # Modify ProjectInput.opi
     keys_path = "{}/Keys".format(current_path)
