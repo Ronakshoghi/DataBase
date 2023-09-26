@@ -50,7 +50,6 @@ def create_sub_folder(key, cp_code='abaqus'):
             if os.path.isfile(source):
                 shutil.copy(source, destination)
 
-    #TODO: Which are the OpenPhase files that need to be copied? Do I have constant files? Where are Temp Files copied?
     elif cp_code =='openphase':
         print('Current state: no constant files, all temporary. I do not create subfolders "input" and "results".')
     os.chdir(current_path)
