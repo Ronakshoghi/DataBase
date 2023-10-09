@@ -5,11 +5,11 @@ OpenPhase SVN Version: 7950
 @RunTimeControl
 
 $SimTtl         Simulation Title                        : MatchBoxRVE
-$nSteps         Number of Time Steps                    : 40000
-$FTime          Output to Disk every (tSteps)           : 4000
-$STime          Output to Screen every (tSteps)         : 4000
+$nSteps         Number of Time Steps                    : 10000
+$FTime          Output to Disk every (tSteps)           : 1000
+$STime          Output to Screen every (tSteps)         : 1000
 $dt             Initial Time Step                       : 1
-$nOMP           Number of OpenMP Threads                : 4
+$nOMP           Number of OpenMP Threads                : 8
 $Restrt         Restart switch (Yes/No)                 : No
 $tStart         Restart at time step                    : 0
 $tRstrt         Restart output every (tSteps)           : 100
@@ -21,10 +21,10 @@ $EUnits         Unit of energy                         : J
 
 @Settings
 
-$Nx             System Size in X Direction              : 14
-$Ny             System Size in Y Direction              : 14
-$Nz             System Size in Z Direction              : 14
-$dx             Grid Spacing                            : 0.0000475
+$Nx             System Size in X Direction              : 11
+$Ny             System Size in Y Direction              : 11
+$Nz             System Size in Z Direction              : 11
+$dx             Grid Spacing                            : 0.00002
 $IWidth         Interface Width (in grid points)        : 1
 
 $Phase_0        Name of Phase 0                         : Testensite
