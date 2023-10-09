@@ -17,6 +17,7 @@ from datetime import date
 import os
 from src import Database_Handler as DC
 import json
+import numpy as np
 
 """
 This function reads Meta data in inout folder for each key and writes them in the JSON database
@@ -37,7 +38,7 @@ def meta_reader(key, cp_code='abaqus', ori_file='Orientation.txt', ori_file_head
     current_path = os.getcwd()
     keys_path = "{}/Keys".format(current_path)
     os.chdir(keys_path)
-    key_path = os.path.abspath(key)
+    key_path = os.path.abspath(key) # = run directory
     if cp_code == 'abaqus':
         key_input_path = "{}/inputs".format(key_path)
         key_results_path = "{}/results".format(key_path)
@@ -63,31 +64,39 @@ def meta_reader(key, cp_code='abaqus', ori_file='Orientation.txt', ori_file_head
     else:
         raise ValueError("cp_code {code} not valid. Must be abaqus or openphase.".format(code=cp_code))
 
-    orientation_file = open(ori_file)
-    phi1 = []
-    phi2 = []
-    phi3 = []
+    # Read orientations
     orientation = {}
-    if ori_file_header:
-        lines = orientation_file.readlines()[1:]
-    else:
-        lines = orientation_file.readlines()
     if cp_code == 'abaqus':
-        x = int(len(lines) / 9)  # Why by nine?
-        sep = '  '
+        orientation_file = open(ori_file)
+        phi1 = []
+        phi2 = []
+        phi3 = []
+        if ori_file_header:
+            lines = orientation_file.readlines()[1:]
+        else:
+            lines = orientation_file.readlines()
+            x = int(len(lines) / 9)  # Why by nine?
+            sep = '  '
+        for line in lines:
+            phi1.append(float(line.split(sep)[0]))
+            phi2.append(float(line.split(sep)[1]))
+            phi3.append(float(line.split(sep)[2]))
+        orientation['phi1'] = phi1
+        orientation['phi2'] = phi2
+        orientation['phi3'] = phi3
+
     elif cp_code == 'openphase':
-        x = int(len(lines) ** (1 / 3))
-        sep = ','
+        with open(ori_file, 'r') as f:
+            data_json = json.load(f)
+        data_ori = np.array(data_json['discrete_orientations'])
+        orientation['phi1'] = data_ori[:, 0]
+        orientation['phi2'] = data_ori[:, 1]
+        orientation['phi3'] = data_ori[:, 2]
+        x = round(len(data_ori)**(1/3))
     else:
         raise ValueError("cp_code {code} not valid. Must be abaqus or openphase.".format(code=cp_code))
 
-    for line in lines:
-        phi1.append(float(line.split(sep)[0]))
-        phi2.append(float(line.split(sep)[1]))
-        phi3.append(float(line.split(sep)[2]))
-    orientation['phi1'] = phi1
-    orientation['phi2'] = phi2
-    orientation['phi3'] = phi3
+
     meta_dict['Orientation'] = orientation
     RVE_Size = "{}*{}*{}".format(x, x, x)
     meta_dict['RVE_Size'] = RVE_Size
