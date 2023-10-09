@@ -73,10 +73,12 @@ def abaqus_input_generator(Key):
     os.chdir(current_path)
 
 
-def openphase_input_generator(load, key, n_grains_per_dir, elements_per_grain, ori_file='Orientation.txt'):
+def openphase_input_generator(load, key, n_grains_per_dir, elements_per_grain,
+                              src_dir="/Users/jan/ronak_db/DataBase/src"):
     """
     This function modifies the ProjectInput.opi and the Matchbox.cpp. Currently, loads are changed according to load
     variable, discretization is changed according to n_grains and elments_per_grain.
+    :param src_dir:
     :param elements_per_grain:
     :param n_grains_per_dir:
     :param load:
@@ -85,17 +87,18 @@ def openphase_input_generator(load, key, n_grains_per_dir, elements_per_grain, o
     """
 
     current_path = os.getcwd()
-    temp_files_path = "{}/OpenPhase_Temp_Files".format(current_path)
+    temp_files_path = "{}/OpenPhase_Temp_Files".format(src_dir)
     input_file = "{}/ProjectInput.opi".format(temp_files_path)
     cpp_file = "{}/MatchBox.cpp".format(temp_files_path)
     make_file = "{}/Makefile".format(temp_files_path)
     n_grains_per_dir = int(n_grains_per_dir*elements_per_grain**(1/3))
+    ori_file = key + "_orientations.csv"
 
     # Modify ProjectInput.opi
     keys_path = "{}/Keys".format(current_path)
-    os.chdir(keys_path)
-    key_path = os.path.abspath(key)
-    os.chdir(key_path)
+    run_dir = os.path.join(keys_path, key)
+    os.chdir(run_dir)
+
     with open(input_file, 'r') as f:
         lines = f.readlines()
     keywords_bc_types = ['$BCX', '$BCY', '$BCZ', '$BCYZ', '$BCXZ', '$BCXY']
@@ -132,6 +135,9 @@ def openphase_input_generator(load, key, n_grains_per_dir, elements_per_grain, o
                 f.write('$Ny             System Size in Y Direction              : {}\n'.format(n_grains_per_dir))
             elif '$Nz' in line:
                 f.write('$Nz             System Size in Z Direction              : {}\n'.format(n_grains_per_dir))
+            elif '$dx' in line:
+                f.write('$dx             Grid Spacing                            : {}\n'.format(
+                    0.00002/elements_per_grain**(1/3)))
             else:
                 f.write(line)
         f.close()
