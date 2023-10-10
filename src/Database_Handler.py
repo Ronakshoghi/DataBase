@@ -20,4 +20,6 @@ def read_database_from_json(json_file):
 
 def json_database_creator(results_dict, json_file):
     with open(json_file, 'w') as output_file:
-        json.dump(results_dict, output_file)
+        json.dump(results_dict, output_file, indent=4)
+
+#use nice indent here
