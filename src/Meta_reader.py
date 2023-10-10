@@ -89,9 +89,9 @@ def meta_reader(key, cp_code='abaqus', ori_file='Orientation.txt', ori_file_head
         with open(ori_file, 'r') as f:
             data_json = json.load(f)
         data_ori = np.array(data_json['discrete_orientations'])
-        orientation['phi1'] = data_ori[:, 0]
-        orientation['phi2'] = data_ori[:, 1]
-        orientation['phi3'] = data_ori[:, 2]
+        orientation['phi1'] = data_ori[:, 0].tolist()
+        orientation['phi2'] = data_ori[:, 1].tolist()
+        orientation['phi3'] = data_ori[:, 2].tolist()
         x = round(len(data_ori)**(1/3))
     else:
         raise ValueError("cp_code {code} not valid. Must be abaqus or openphase.".format(code=cp_code))
