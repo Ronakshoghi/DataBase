@@ -112,8 +112,8 @@ int main(int argc, char *argv[])
             if (RTC.WriteVTK()) //What does each method do?
             {
 //                Phi.WriteVTK(RTC.tStep, OPSettings);
-                // EP.WriteStressesVTK(RTC.tStep, OPSettings);
-                EP.WriteCauchyStressesVTK(RTC.tStep, OPSettings);
+//                EP.WriteStressesVTK(RTC.tStep, OPSettings);
+//                EP.WriteCauchyStressesVTK(RTC.tStep, OPSettings);
 //                EP.WritePlasticStrainsVTK(RTC.tStep,OPSettings);
 //                EP.WriteTotalRotationsVTK(RTC.tStep, OPSettings);
 //                Phi.WriteDistortedVTK(RTC.tStep, OPSettings, EP);
