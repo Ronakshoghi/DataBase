@@ -20,10 +20,10 @@ Thia function read all the output files in the result folder and write them in t
 
 def results_reader (key, cp_code='abaqus'):
     current_path = os.getcwd()
-    keys_path ="{}/Keys".format(current_path)
+    keys_path = os.path.join(current_path, "Keys")
     os.chdir(keys_path)
     key_path = os.path.abspath(key)
-    results_path = "{}/results".format(key_path)
+    results_path = os.path.join(key_path, "results")
     os.chdir(results_path)
     results_files_name = []
     for root, dirs, files in os.walk(os.getcwd(), topdown=False):
