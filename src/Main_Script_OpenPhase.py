@@ -4,6 +4,9 @@ Author: Jan Schmidt
 Date: 09.10.2023
 
 """
+import sys
+src_dir = "/Users/jan/ronak_db/DataBase"
+sys.path.append(src_dir)
 import numpy as np
 from src import Key_Parser as KP
 from src import Key_Generator as KG
@@ -21,7 +24,7 @@ import glob
 import time
 
 
-def main(n_grains_per_dir, elements_per_grain):
+def main(n_grains_per_dir=11, elements_per_grain=1):
     """
 
     :return:
@@ -34,19 +37,16 @@ def main(n_grains_per_dir, elements_per_grain):
     os.chdir(dname)
 
     # Define the directory structure
-    project_dir = "/Users/jan/ronak_db/DataBase"
-    src_dir = os.path.join(project_dir, "src")
     texture_dir = "/Users/jan/Documents/Promotion/04_GeorgiaTech/06_DataBase/01_TextureFiles"
     results_dir = "/Users/jan/Documents/Promotion/04_GeorgiaTech/06_DataBase/02_ResultsCPFFT" # contains the json db
     bc_dir = "/Users/jan/Documents/Promotion/04_GeorgiaTech/06_DataBase/03_BoundaryConditions"
+    log_files_dir = "/Users/jan/Documents/Promotion/04_GeorgiaTech/06_DataBase/04_LogFiles"
 
-    results_dict = DH.read_database_from_json(os.path.join(results_dir, "Data_Base.json"))
     times_dict = {}
     texture_files_list = glob.glob(os.path.join(texture_dir, "*"))  # takes all textures in the texture directory
     load_cases = os.path.join(bc_dir, "sig_abqopp.txt")
-    loads = np.genfromtxt(load_cases)
+    loads = np.genfromtxt(load_cases, delimiter=",")
 
-    #os.chdir('..')
     current_path = os.getcwd() #This will be cluster/scratch
 
 
@@ -65,15 +65,19 @@ def main(n_grains_per_dir, elements_per_grain):
 
 
     "Main Process"
-    for idx_texture, texture_file in enumerate(texture_files_list):
+    for idx_texture, texture_file in enumerate(texture_files_list[:1]):
         for counter, load in enumerate(loads):
+            results_dict = DH.read_database_from_json(os.path.join(results_dir, "Data_Base.json"))
             key = KG.key_generator(load, n_grains_per_dir=n_grains_per_dir, elements_per_grain=elements_per_grain,
                                    cp_code=cp_code, ori_file=texture_file)
             if key in results_dict.keys():
                 print("The key is already found in JSON file")
                 continue
+            elif "{}.txt".format(key) in glob.glob(os.path.join(log_files_dir)):
+                print("For key {} a log file exists in {}. This can be caused by a parallel worker working on the same"
+                      "data point or non-converged results". format(key, log_files_dir))
             else:
-                print("The key was not found in JSON file")
+                print("The key was not found in JSON file and no log file exists")
                 # For this key, a new folder is created that contains the subfolder inputs and results
                 KFC.create_sub_folder(key, cp_code=cp_code, ori_file=texture_file)
                 scaling_factor = 58.6e6  # 50e6 In OpenPhase we can scale here directly to J2 equiv. stress in Pa!
@@ -93,7 +97,7 @@ def main(n_grains_per_dir, elements_per_grain):
                     GG.openphase_input_generator(load=scaled_load, key=key, n_grains_per_dir=n_grains_per_dir,
                                                  elements_per_grain=elements_per_grain)
                     start = time.time()
-                    return_val = CP.openphase_runner(key, t_timeout=300)
+                    return_val = CP.openphase_runner(key, t_timeout=300, log_files_dir=log_files_dir)
                     end = time.time()
                     print("Runtime of simulation is: %f seconds" % (end - start))
                     times_dict[key] = end - start
@@ -107,6 +111,7 @@ def main(n_grains_per_dir, elements_per_grain):
                     print("Result file contains not enough lines to find max strain!")
                     continue
 
+                # TODO: I need a mechanism that increases stress if max strain is below a threshold
                 # Insert Results to the Data Base
                 results_dict[key] = {"Meta_Data": MR.meta_reader(key, cp_code=cp_code, ori_file=texture_file,
                                                                  ori_file_header=False),
@@ -116,7 +121,7 @@ def main(n_grains_per_dir, elements_per_grain):
                                      "Max_Total_Strain": max_strain,
                                      "Results": RP.results_reader(key, cp_code=cp_code)}
 
-            DH.json_database_creator(results_dict, "Data_Base_Updated.json")
+            DH.json_database_creator(results_dict, os.path.join(results_dir, "Data_Base.json"))
         # "Meta_Data": MR.meta_reader(key),
         "Post Processing"
         # Keys = Data_Base.keys()
@@ -127,6 +132,8 @@ def main(n_grains_per_dir, elements_per_grain):
 
 
 if __name__ == "__main__":
-    n_grains_dir = sys.argv[-2] #number of grains per direction
-    epg = sys.argv[-1] #number of elements per grain (1,8,27,...)
+    n_grains_dir = int(sys.argv[-2]) #number of grains per direction
+    epg = int(sys.argv[-1]) #number of elements per grain (1,8,27,...)
+    print("Starting Data Generation.")
+    print("RVE Size: {}-{}-{} | {} element(s) per grain".format(n_grains_dir, n_grains_dir, n_grains_dir, epg))
     main(n_grains_dir, epg)
