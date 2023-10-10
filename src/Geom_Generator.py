@@ -74,7 +74,7 @@ def abaqus_input_generator(Key):
 
 
 def openphase_input_generator(load, key, n_grains_per_dir, elements_per_grain,
-                              src_dir="/Users/jan/ronak_db/DataBase/src"):
+                              src_dir="/Users/jan/ronak_db/DataBase/"):
     """
     This function modifies the ProjectInput.opi and the Matchbox.cpp. Currently, loads are changed according to load
     variable, discretization is changed according to n_grains and elments_per_grain.
@@ -87,10 +87,10 @@ def openphase_input_generator(load, key, n_grains_per_dir, elements_per_grain,
     """
 
     current_path = os.getcwd()
-    temp_files_path = "{}/OpenPhase_Temp_Files".format(src_dir)
-    input_file = "{}/ProjectInput.opi".format(temp_files_path)
-    cpp_file = "{}/MatchBox.cpp".format(temp_files_path)
-    make_file = "{}/Makefile".format(temp_files_path)
+    temp_files_path = os.path.join(src_dir, "OpenPhase_Temp_Files")
+    input_file = os.path.join(temp_files_path, "ProjectInput.opi")
+    cpp_file = os.path.join(temp_files_path, "MatchBox.cpp")
+    make_file = os.path.join(temp_files_path,"Makefile")
     n_grains_per_dir = int(n_grains_per_dir*elements_per_grain**(1/3))
     ori_file = key + "_orientations.csv"
 
@@ -159,9 +159,9 @@ def openphase_input_generator(load, key, n_grains_per_dir, elements_per_grain,
                 f.write(line)
         f.close()
 
-    # Copy the Makefile and the orientation file
+    # Copy the Makefile
     shutil.copy2(make_file, "Makefile")
-    shutil.copy(os.path.join(temp_files_path, ori_file), ori_file)
 
+    # Come back todirectory where the main script lies after modifying the files in run dir
     os.chdir(current_path)
 
