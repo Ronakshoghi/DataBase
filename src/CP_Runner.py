@@ -12,6 +12,7 @@ import shutil
 import subprocess
 
 
+
 def Abaqus_Runner(Key, ncpu):
     print(Key)
     Current_Path = os.getcwd()
@@ -29,9 +30,11 @@ def Abaqus_Runner(Key, ncpu):
     os.chdir(Current_Path)
 
 
-def openphase_runner(key, t_timeout=300):
+def openphase_runner(key, t_timeout=300, log_files_dir=None):
     print(key)
-    current_path = os.getcwd() # home
+    if not log_files_dir:
+        log_files_dir = os.getcwd()
+    current_path = os.getcwd()  # /scratch
     simu_path = os.path.join(current_path, "Keys/{}".format(key))
     command_make = "make SETTINGS=static"
     command_run = "./Matchbox {inputfile}".format(inputfile=key + ".opi")
@@ -45,11 +48,22 @@ def openphase_runner(key, t_timeout=300):
     except subprocess.CalledProcessError:
         raise ValueError("Make Error")
 
-    # Run
     try:
-        output = subprocess.run(command_run, cwd=simu_path, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                                check=True, shell=True, timeout=t_timeout)
+        filename = os.path.join(log_files_dir, "{}.log".format(key))
+        print(filename)
+        with open(filename, "w") as f:
+            output = subprocess.run(command_run, cwd=simu_path, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                                    check=True, shell=True, timeout=t_timeout, text=True)
+
+            for line in output.stdout:
+                f.write(line)
+        # Remove log file if simulation converges
+        os.remove(filename)
+
+        # Remove VTK and RawData dirs
+        os.removedirs("VTK")
+        os.removedirs("RawData")
     except subprocess.TimeoutExpired:
         print("{loadcase} NOT CONVERGED".format(loadcase=key))
-
-
+        os.removedirs("RawData")
+        os.removedirs("VTK")
