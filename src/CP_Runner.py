@@ -61,9 +61,9 @@ def openphase_runner(key, t_timeout=300, log_files_dir=None):
         os.remove(filename)
 
         # Remove VTK and RawData dirs
-        os.removedirs("VTK")
-        os.removedirs("RawData")
+        os.removedirs(os.path.join(simu_path, "VTK"))
+        os.removedirs(os.path.join(simu_path, "RawData"))
     except subprocess.TimeoutExpired:
         print("{loadcase} NOT CONVERGED".format(loadcase=key))
-        os.removedirs("RawData")
-        os.removedirs("VTK")
+        os.removedirs(os.path.join(simu_path, "VTK"))
+        os.removedirs(os.path.join(simu_path, "RawData"))
