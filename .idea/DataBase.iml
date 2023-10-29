@@ -4,7 +4,7 @@
     <content url="file://$MODULE_DIR$">
       <excludeFolder url="file://$MODULE_DIR$/Keys" />
     </content>
-    <orderEntry type="jdk" jdkName="Python 3.9 (mllegacy) (3)" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="Python 3.9 (ml_legacy)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
   <component name="PyDocumentationSettings">
