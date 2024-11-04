@@ -30,6 +30,27 @@ import warnings
 
 
 def key_generator(load_case, n_grains_per_dir=11, elements_per_grain=8, cp_code='abaqus', ori_file='Orientation.txt'):
+    """
+    Function that creates the unique key for a given RVE size, texture and BC. Will be used to identify the simulation
+    and its result in the Data Base.
+    Parameters
+    ----------
+    load_case : array-like (6,)
+        Stress BC in Voigt notation
+    n_grains_per_dir : int
+        number of grains per direction (RVE)
+    elements_per_grain : int
+        number of elements per grain
+    cp_code : str
+        CP code that should be used. abaqus or openphase
+    ori_file : str
+        path to texture file that contains orientations for RVE
+
+    Returns
+    -------
+    key : str
+        Unique key containing info on texture, RVE size, BC
+    """
     current_path = os.getcwd()
     if cp_code == 'abaqus':
         temp_files_path = "{}/Abaqus_Temp_Files".format(current_path)
@@ -61,8 +82,8 @@ def key_generator(load_case, n_grains_per_dir=11, elements_per_grain=8, cp_code=
     else:
         with open(ori_file, 'r') as f:
             data_json = json.load(f)
-        data_ori = np.array(data_json['discrete_orientations'])
-        orientation_hash = hashlib.sha256(data_ori).hexdigest()[:5]
+        data_ori = np.array(data_json['discrete_orientations_random'])
+        orientation_hash = hashlib.sha256(data_ori).hexdigest()[:7]
         if data_json['halfwidth'] < 0.0018:
             tx = 'sc'
         else:
