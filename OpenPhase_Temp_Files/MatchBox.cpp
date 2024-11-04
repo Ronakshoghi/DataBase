@@ -6,8 +6,8 @@
 #include "BoundaryConditions.h"
 #include "RunTimeControl.h"
 #include "Orientations.h"
-#include "Mechanics/ElasticProperties.h"
-#include "Mechanics/ElasticitySolverSpectral.h"
+#include "ElasticProperties.h"
+#include "ElasticitySolverSpectral.h"
 #include "Mechanics/CrystalPlasticity.h"
 #include "Tools/MicrostructureAnalysis.h"
 #include "Crystallography.h"
@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
 	BoundaryConditions          BC(OPSettings, InputFile);
 	PhaseField                  Phi(OPSettings);
 	ElasticProperties           EP(OPSettings, InputFile);
-	ElasticitySolverSpectral    ES(OPSettings);
+	ElasticitySolverSpectral    ES(OPSettings, InputFile);
 	CrystalPlasticity           PFCP(OPSettings, InputFile);
     Orientations				OR(OPSettings);
     Crystallography				CR(OPSettings, InputFile);
@@ -49,9 +49,9 @@ int main(int argc, char *argv[])
     if(RTC.Restart)
         {
             cout << "Restart data being read! " << endl;
-            Phi.Read(BC, RTC.tStart);
-            EP.Read(BC, RTC.tStart);
-            PFCP.Read(BC, RTC.tStart);
+            Phi.Read(OPSettings, BC, RTC.tStart);
+            EP.Read(OPSettings, BC, RTC.tStart);
+            PFCP.Read(OPSettings, BC, RTC.tStart);
 
             EP.SetGrainsProperties(Phi);
 
