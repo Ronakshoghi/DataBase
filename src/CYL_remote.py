@@ -8,6 +8,7 @@ import json
 import matlab
 from matlab import engine
 from src import PostProcessingTools
+from src.Key_Generator import key_generator
 import numpy as np
 import argparse
 import os
@@ -109,6 +110,10 @@ if recreate_json:
             cyl_failed = json.load(f)
     else:
         print(f"Note: recreate_json from argparse is: {recreate_json}. Not a file!")
+
+# Create unit stresses to transform deviatoric to full stresses
+sunit = FE.load_cases(number_3d=100, number_6d=0)
+
 count = 0
 # Modified this to cyl_failed.keys in order  to re-run failed cyl jobs
 for texture_key in list(textures_success.keys())[idx_start:idx_start+n_textures]:#list(textures_success.keys())[idx_start:idx_start+n_textures]:
@@ -185,19 +190,66 @@ for texture_key in list(textures_success.keys())[idx_start:idx_start+n_textures]
     cyl_data = eng.cyl_taylor(name, "432", matlab.double(texture_dict['discrete_orientations_random']),
                               matlab.double(yield_points_cpfft), taylor_factor_file, result_path, angle_path, nargout=1)
 
-    cyl_data = np.array(cyl_data)
+    cyl_data = np.array(cyl_data) # Deviatoric Stresses + angle [S11, S22, S33, S12, S13, S23, theta]
     cyl_key = '_'.join(["Us_CYL", tex_key])
     cyl_dict = {cyl_key: cyl_data[:, :-1].tolist()}
 
+    keys = []
+    new_dict_for_db = {}
+    for load_case in sunit:
+        key = key_generator(load_case, n_grains_per_dir=11, elements_per_grain=1, cp_code='openphase',
+                            ori_file=texture_file)
+        key += '_cyl'
+        keys.append(key)
+    for idx_sunit, (cyl_key, values) in enumerate(zip(keys, cyl_data[:, :-1].tolist())): #cyl_key is the load_key_cyl
+        new_dict_for_db[cyl_key] = {} # create an empty dict here that later gets 'Results', 'Initial Load'
+        # Transform from deviatoric to Cauchy by adding the trace:
+        sig_dev = np.array(values)
+        s_unit = sunit[idx_sunit]
+        s_unit_dev = FE.sig_dev(s_unit)
 
-    #TODO: Transform the cyl_data from deviatoric to full stress before adding to the Data_Base.json
+        # Set small values to 0
+        sig_dev[np.abs(sig_dev) < 1e-4] = 0
+        s_unit[np.abs(s_unit) < 1e-4] = 0
+        s_unit_dev[np.abs(s_unit_dev) < 1e-4] = 0
+
+        # Calculate scaled hydrostatic pressure to reconstruct 6d stress
+        p = np.nan_to_num(sig_dev[:3] / s_unit_dev[:3] * np.sum(sunit[idx_sunit][:3]))
+        # print(f'pressure: {p}, with std {np.std(p)}')
+        nonzeros = p[np.abs(p) > 1e-6]
+        assert np.std(nonzeros) / np.mean(nonzeros) < 1e-3
+
+        # pressure should be the same for all commponents
+        # print(f'original deviatoric: {sig_dev}')
+        sig_cauchy = sig_dev + 1 / 3 * np.append(p, [0, 0, 0])
+        sig_cauchy[np.abs(sig_cauchy) < 1e-4] = 0
+        # print(f'final 6d stress {sig_cauchy}')
+        # print(f'initial stress {s_unit}')
+
+        # Check if components are scaled up by same factor w.r.t unit stress
+        sig_check = np.nan_to_num(sig_cauchy / s_unit)
+        # print(f'6d stree / unit stress {sig_check}')
+        nonzeros = sig_check[np.abs(sig_check) > 1e-6]
+        # print(f'Check sunit to final: {np.std(nonzeros)}')
+        assert np.std(nonzeros) / np.mean(nonzeros) < 1e-3
+
+        new_dict_for_db[cyl_key]['Initial_Load'] = sunit[idx_sunit].tolist()
+        new_dict_for_db[cyl_key]['Results'] = sig_cauchy.tolist()
+
+
     if cyl_key in res_dict.keys() and not overwrite:
         print(f'Texture {tex_key} alread has CYL Data. Will NOT overwrite it')
     else:
-        res_dict[cyl_key] = cyl_data[:, :-1].tolist()
+        ## Old way: Adding yield onsets as list
+        # res_dict[cyl_key] = cyl_data[:, :-1].tolist()
+        # with open(res_file, 'w') as f:
+        #     json.dump(res_dict, f, indent=4)
+        # print(f'Texture {tex_key} Data_Base.json has now CYL Data:) .')
+        combined_dict = dict(res_dict, **new_dict_for_db)
         with open(res_file, 'w') as f:
-            json.dump(res_dict, f, indent=4)
+            json.dump(combined_dict, f, indent=4)
         print(f'Texture {tex_key} Data_Base.json has now CYL Data:) .')
+
     count += 1
     print(f'Calculated CYL yieldonsets for {count} textures in this run of the script.')
     if count == n_textures:
