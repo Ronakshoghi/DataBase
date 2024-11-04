@@ -13,10 +13,10 @@ import glob
 import json
 from sklearn.neighbors import NearestNeighbors
 
-texture_dir = "/Users/jan/Documents/Promotion/04_GeorgiaTech/06_DataBase/01_TextureFiles/Old"
-similarity_key = 'gsh_coeff_reconstructed' # 'gsh_coeff_original' #
-texture_files_list = glob.glob(os.path.join(texture_dir, "*.json"))
-texture_keys_list = [os.path.basename(file) for file in glob.glob(os.path.join(texture_dir, "*"))]
+texture_dir = "/Users/jan/Documents/Promotion/04_GeorgiaTech/06_DataBase/01_TextureFiles/KDEApproach_5deg"
+similarity_key = 'gsh_coeff_reconstructed_random' # 'gsh_coeff_original' #
+texture_files_list = glob.glob(os.path.join(texture_dir, "texturefile*.json"))
+texture_keys_list = [os.path.basename(file) for file in glob.glob(os.path.join(texture_dir, "texturefile*"))]
 texture_list_sorted = []
 gsh_dict = {}
 start_point = 0
