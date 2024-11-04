@@ -27,6 +27,24 @@ This function reads Meta data in inout folder for each key and writes them in th
 # TODO: What kind of information do we want to include in the database? MS Descriptors, Barlat Coefficients, MTEX version
 
 def meta_reader(key, cp_code='abaqus', ori_file='Orientation.txt', ori_file_header=True):
+    """
+    Create the meta-data content for one converged simulation.
+    Parameters
+    ----------
+    key : str
+        BC Key of format Us_A{}B{}C{}D{}E{}F{}_{load_hash}_{n_grains}_{elements_per_grain}_{ori_hash}_Tx_{tx_type}
+    cp_code : str
+        CP code that should be used. Either abaqus or openphase.
+    ori_file : str
+        Path to texture file that contains the orientation used during the simulation.
+    ori_file_header : bool
+        If the ori_file contains a header. In case cp_code = abaqus, the ori file is a txt file that might contain
+        a header.
+
+    Returns
+    -------
+
+    """
     uname = platform.uname()
     meta_dict = {
         'Owner': getpass.getuser(),
@@ -86,9 +104,10 @@ def meta_reader(key, cp_code='abaqus', ori_file='Orientation.txt', ori_file_head
         orientation['phi3'] = phi3
 
     elif cp_code == 'openphase':
+        # In OpenPhae, a texture_file.json is expected here. From this file, the orientations are read.
         with open(ori_file, 'r') as f:
             data_json = json.load(f)
-        data_ori = np.array(data_json['discrete_orientations'])
+        data_ori = np.array(data_json['discrete_orientations_random'])
         orientation['phi1'] = data_ori[:, 0].tolist()
         orientation['phi2'] = data_ori[:, 1].tolist()
         orientation['phi3'] = data_ori[:, 2].tolist()
