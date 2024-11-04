@@ -9,7 +9,7 @@ Time: 18:20
 import json
 
 """
-Thia function insert the loads from a file into database. 
+This function insert the loads from a file into database. 
 """
 
 
