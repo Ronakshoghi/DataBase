@@ -4,8 +4,8 @@ import json
 import numpy as np
 import hashlib
 
-texture_dir = "/Users/jan/Documents/Promotion/04_GeorgiaTech/06_DataBase/01_TextureFiles/Old"
-texture_files_list = glob.glob(os.path.join(texture_dir, "*.json"))
+texture_dir = "/Users/jan/Documents/Promotion/04_GeorgiaTech/06_DataBase/01_TextureFiles/TestSet"
+texture_files_list = glob.glob(os.path.join(texture_dir, "texturefile_*.json"))
 texture_key_translation_dict = {}
 
 # iterate through json files and rename them
@@ -14,8 +14,8 @@ for texture_file in texture_files_list:
         texture_dict = json.load(f)
 
     # determine Hash
-    data_ori = np.array(texture_dict['discrete_orientations'])
-    orientation_hash = hashlib.sha256(data_ori).hexdigest()[:5]
+    data_ori = np.array(texture_dict['discrete_orientations_random'])
+    orientation_hash = hashlib.sha256(data_ori).hexdigest()[:7]
     if texture_dict['halfwidth'] < 0.0018:
         tx = 'sc'
     else:
@@ -28,6 +28,8 @@ for texture_file in texture_files_list:
 
     with open(os.path.join(texture_dir, filename), "w") as f:
         json.dump(texture_dict, f, indent=4)
+
+    os.remove(texture_file)
 
 with open(os.path.join(texture_dir, "translation_dict_key_name.json"), "w") as f:
     json.dump(texture_key_translation_dict, f, indent=4)
