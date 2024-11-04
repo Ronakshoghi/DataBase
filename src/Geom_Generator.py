@@ -74,21 +74,32 @@ def abaqus_input_generator(Key):
 
 
 def openphase_input_generator(load, key, n_grains_per_dir, elements_per_grain,
-                              src_dir="/Users/jan/ronak_db/DataBase/"):
+                              src_dir="/Users/jan/ronak_db/DataBase/", opi_file='ProjectInput.opi'):
     """
-    This function modifies the ProjectInput.opi and the Matchbox.cpp. Currently, loads are changed according to load
-    variable, discretization is changed according to n_grains and elments_per_grain.
-    :param src_dir:
-    :param elements_per_grain:
-    :param n_grains_per_dir:
-    :param load:
-    :param key:
-    :return:
+    This function modifies the ProjectInput.opi and the Matchbox.cpp in the Open_Phase_Temp_Files.
+    Currently, BCs in ProjectInput.opi are changed according to given load variable, discretization is changed according
+    to n_grains and elments_per_grain.
+
+    Parameters
+    ----------
+    load : np.array
+        Stress BC in Voigt notation that is written to CPFFT input file.
+    key : str
+        BC Key of format Us_A{}B{}C{}D{}E{}F{}_{load_hash}_{n_grains}_{elements_per_grain}_{ori_hash}_Tx_{tx_type}
+    n_grains_per_dir: int
+        Number of grains per direction.
+    elements_per_grain: int
+        Number of Elements / FFT points per grain.
+    src_dir : str
+        Syspath to the code directory.
+    opi_file : str
+        Name of the input file that is to be modified.
+
     """
 
     current_path = os.getcwd()
     temp_files_path = os.path.join(src_dir, "OpenPhase_Temp_Files")
-    input_file = os.path.join(temp_files_path, "ProjectInput.opi")
+    input_file = os.path.join(temp_files_path, opi_file)
     cpp_file = os.path.join(temp_files_path, "MatchBox.cpp")
     make_file = os.path.join(temp_files_path,"Makefile")
     n_grains_per_dir = int(n_grains_per_dir*elements_per_grain**(1/3))
