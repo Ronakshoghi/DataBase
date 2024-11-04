@@ -19,6 +19,7 @@
 
 .PHONY : all clean cleanall
 
+# This variable needs to point to the directory that contains the OpenPhase core
 DEPTH = /Users/jan/OpenPhaseRGB
 
 SRC := $(wildcard *.cpp)
