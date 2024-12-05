@@ -130,7 +130,7 @@ SBATCH_template = [
     'cd $SLURM_SUBMIT_DIR',
     'module load anaconda3',
     'conda activate data_generation',
-    'module load fftw',
+    'module load fftw/3.3.10-mva2-openmp',
     '',
     'python3 placeholder.py'  # 17
 ]
