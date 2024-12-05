@@ -121,7 +121,7 @@ SBATCH_template = [
     '#SBATCH --account=gts-skalidindi7-coda20',
     '#SBATCH -N1 --ntasks=8',  # Number of nodes and cores per node required
     '#SBATCH --mem-per-cpu=8G',  # Memory per core
-    '#SBATCH -qinferno', #qinferno
+    '#SBATCH -qinferno', #qembers
     '#SBATCH -t05:00:00', #6
     '#SBATCH -oReport-%j.out',  # 8
     '#SBATCH --mail-type=FAIL',
