@@ -4,10 +4,15 @@
     <content url="file://$MODULE_DIR$">
       <excludeFolder url="file://$MODULE_DIR$/Keys" />
     </content>
-    <orderEntry type="jdk" jdkName="Python 3.9 (ml_legacy)" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="Python 3.9 (data_generation_pace) (4)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
+  <component name="PackageRequirementsSettings">
+    <option name="requirementsPath" value="" />
+  </component>
   <component name="PyDocumentationSettings">
+    <option name="format" value="NUMPY" />
+    <option name="myDocStringFormat" value="NumPy" />
     <option name="renderExternalDocumentation" value="true" />
   </component>
 </module>
