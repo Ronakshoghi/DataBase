@@ -41,8 +41,8 @@ args = vars(parser.parse_args())
 
 # settings
 overwrite_results = False
-bc_per_texture = 40  # 30
-setup = 'setup_6d_iteration_1'# reconstsruciton 'setup_6d_iteration_1'
+bc_per_texture = 20  # 30 , 40
+setup = 'setup_3d_iteration_1'# reconstsruciton 'setup_6d_iteration_1'
 
 # Read soft coded args from parser
 n_textures = int(args['number_textures'])
@@ -66,7 +66,7 @@ for directory in [texture_dir, bc_dir]:
 # Define the sorted texture and the load file hardwired
 texture_keys_sorted = os.path.join(texture_dir, "texture_keys_sorted.txt")
 texture_keys_success = os.path.join(texture_dir, "textures_success.json")
-bc_file = os.path.join(bc_dir, 'sig_3d_0_6d_200_texture_order.json')
+bc_file = os.path.join(bc_dir, 'sig_3d_100_6d_0_texture_order.json')
 #bc_file = os.path.join(bc_dir, 'sig_all.json')
 with open(bc_file, 'r') as f:
     bc_dict = json.load(f)
