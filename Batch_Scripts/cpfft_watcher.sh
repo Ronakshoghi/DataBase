@@ -1,5 +1,5 @@
 #!/bin/bash
-nit=15   # how often should this script be run
+nit=1  # how often should this script be run (15)
 nrun=0  # counts iterations of this script
 ntex=1  # number of textures per iteration
 
