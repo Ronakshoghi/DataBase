@@ -10,7 +10,7 @@ Makefile, the binary and the results folder.
 files_to_remove = ['Makefile', 'MatchBox', 'MatchBox.cpp', 'orientations.csv']
 dirs_to_remove = ['results']
 
-path_scratch = '/storage/home/hcoda1/7/jschmidt87/scratch/KDEApproach5deg/'
+path_scratch = '/storage/home/hcoda1/7/jschmidt87/scratch/3DBC_CPFFT/'
 sub_dirs = next(os.walk(path_scratch))[1]
 for texture in sub_dirs:
     path_texture = os.path.join(path_scratch, texture)
