@@ -1,6 +1,6 @@
 #!/bin/bash
-nit=10  # how often should this script be run (15)
-nrun=5  # counts iterations of this script
+nit=15  # how often should this script be run (15)
+nrun=10  # counts iterations of this script
 ntex=500  # number of textures per iteration
 
 module load anaconda3/
