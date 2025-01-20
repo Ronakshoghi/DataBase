@@ -29,8 +29,8 @@ def generate_bckey(load_case):
     return key
 
 bc_dict = {}
-n_6d = 5
-n_3d = 0
+n_6d = 0
+n_3d = 100
 json_file = f'sig_3d_{n_3d}_6d_{n_6d}.json'
 
 # generate a list of stress boundary conditions in Voigt notation

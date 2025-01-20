@@ -15,10 +15,10 @@ valid texture file, chunks it into blocks of 5 Textures and assigns 40 BC to eac
 """
 
 texture_keys_sorted = '/Users/jan/Desktop/Phoenix_Code_Temp/texture_keys_sorted.txt'
-bc_file = '/Users/jan/ronak_db/DataBase/src/sig_3d_0_6d_200.json'
+bc_file = '/Users/jan/ronak_db/DataBase/src/sig_3d_100_6d_0.json'
 texture_keys_success = '/Users/jan/Desktop/Phoenix_Code_Temp/textures_success.json'
 
-bc_per_texture = 40
+bc_per_texture = 20
 
 with open(texture_keys_sorted, "r") as f:
     texture_files_list = f.read()
@@ -89,22 +89,22 @@ for idx_texture_start in range(0, len(texture_files_list), n_chunks):
                 # print(f'Added bc {key} with {value} to Texture {texture_key}')
 
         print("-----------------------------------------------------------------")
-    #     if idx_sub < 3:
-    #         column = idx_sub
-    #         row = 0
-    #     else:
-    #         column = idx_sub - 3
-    #         row = 1
-    #     axs[row, column].plot_wireframe(x, y, z, linewidth=0.5, color='gray', alpha=0.7)
-    #     axs[row, column].scatter(bcs_red[:, 0], bcs_red[:, 1], bcs_red[:, 2], color=colors[idx_sub])
-    #     axs[row, column].set_title(f'Texture {idx_sub}', y=1)
-    #
-    #     axs[1, 2].scatter(bcs_red[:, 0], bcs_red[:, 1], bcs_red[:, 2], label=f'Texture {idx_sub}',
-    #                       color=colors[idx_sub])
+        # if idx_sub < 3:
+        #     column = idx_sub
+        #     row = 0
+        # else:
+        #     column = idx_sub - 3
+        #     row = 1
+        # axs[row, column].plot_wireframe(x, y, z, linewidth=0.5, color='gray', alpha=0.7)
+        # axs[row, column].scatter(bcs_red[:, 0], bcs_red[:, 1], bcs_red[:, 2], color=colors[idx_sub])
+        # axs[row, column].set_title(f'Texture {idx_sub}', y=1)
+        #
+        # axs[1, 2].scatter(bcs_red[:, 0], bcs_red[:, 1], bcs_red[:, 2], label=f'Texture {idx_sub}',
+        #                   color=colors[idx_sub])
     #
     # plt.show()
 
 # Save as json file
-bc_texture_file = '/Users/jan/Desktop/Phoenix_Code_Temp/sig_3d_0_6d_200_texture_order.json'
+bc_texture_file = 'sig_3d_100_6d_0_texture_order.json'
 with open(bc_texture_file, 'w') as f:
     json.dump(bc_texture_dict, f, indent=4)

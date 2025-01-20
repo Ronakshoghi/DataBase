@@ -20,7 +20,7 @@
 .PHONY : all clean cleanall
 
 # This variable needs to point to the directory that contains the OpenPhase core
-DEPTH = /Users/jan/OpenPhaseRGB
+DEPTH = /storage/home/hcoda1/7/jschmidt87/software/OpenPhaseRGB
 
 SRC := $(wildcard *.cpp)
 PROGS := $(basename $(SRC))
