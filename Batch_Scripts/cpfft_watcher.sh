@@ -1,7 +1,7 @@
 #!/bin/bash
-nit=1  # how often should this script be run (15)
+nit=15  # how often should this script be run (15)
 nrun=0  # counts iterations of this script
-ntex=1  # number of textures per iteration
+ntex=500  # number of textures per iteration
 
 module load anaconda3/
 conda activate data_generation
