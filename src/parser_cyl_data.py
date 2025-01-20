@@ -18,12 +18,13 @@ import json
 sunit = FE.load_cases(number_3d=100, number_6d=0)
 
 #Create list of Data_Base.json files that should be updated
-succ_jobs_path = "/Users/jan/pyLabFEA/examples/Texture/TextureFiles/success_jobs.json"
-path_textures = "/Users/jan/pyLabFEA/examples/Texture/TextureFiles/"
-path_scratch = "/Users/jan/pyLabFEA/examples/Texture/Data_CPFFT"
+succ_jobs_path = "/home/users/smidtjzh/Desktop/storage_smidtjzh/PhD_Projekt/01_Data/01_TextureFiles/KDEApproach_5deg/" \
+                 "success_jobs.json"  # "/Users/jan/pyLabFEA/examples/Texture/TextureFiles/success_jobs.json"
+path_textures = "/home/users/smidtjzh/Desktop/storage_smidtjzh/PhD_Projekt/01_Data/01_TextureFiles/KDEApproach_5deg/"  # "/Users/jan/pyLabFEA/examples/Texture/TextureFiles/"
+path_scratch = "/scratch/KDEApproach5deg/KDEApproach5deg"  # "/Users/jan/pyLabFEA/examples/Texture/Data_CPFFT"
 textures_dict = json.load(open(succ_jobs_path, 'r'))
 
-for texture_key in textures_dict.keys():
+for texture_key in list(textures_dict.keys())[1:]:
 
     # 2.1) define texture_file and Data_Base.json file
     texture_file = os.path.join(path_textures, f'texturefile_{texture_key}_*.json')
@@ -44,6 +45,7 @@ for texture_key in textures_dict.keys():
     n_bc = len(res_dict.keys())
     for idx_bc, key in enumerate(res_dict.keys()):
         if "CYL" in key:
+            del_key = key
             keys = []
             new_dict_for_db = {}
             cyl_data = np.array(res_dict[key])
@@ -88,13 +90,14 @@ for texture_key in textures_dict.keys():
                 new_dict_for_db[cyl_key]['Results'] = sig_cauchy.tolist()
 
             combined_dict = dict(res_dict, **new_dict_for_db)
-            del_key = key
+            # del_key = key
 
 
     # 2.3) After updating CYL Data, add texture information on top
     texture_dict = json.load(open(texture_file, 'r'))
     texture_field = {'Texture': texture_dict}
     final_dict = dict(texture_field, **combined_dict)
+    print(f'Deleting {del_key}.')
     del final_dict[del_key]
     with open(res_file, 'w') as f:
         json.dump(final_dict, f, indent=4)
