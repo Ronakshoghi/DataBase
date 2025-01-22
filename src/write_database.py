@@ -14,7 +14,7 @@ file. The purpose of this is to preprocess the CP results from multiple textures
 by the pylabfea data.py script.
 """
 parser = argparse.ArgumentParser(description='Define the Data_Base_xxxx.json parameters')
-parser.add_argument('-n', '--name', help='Name added to Data_Base_xxxx.json', default='KDE5deg')
+parser.add_argument('-n', '--name', help='Name added to Data_Base_xxxx.json', required=True)
 parser.add_argument('-tl', '--texture_list', help='txt file containing the textures to be read', required=True)
 parser.add_argument('-ps', '--path_scratch', help='Path to scratch directory that contains texture_key subdirs',
                     required=True)
@@ -25,6 +25,7 @@ args = vars(parser.parse_args())
 name = args['name']
 texture_list = args['texture_list']
 path_scratch = args['path_scratch']
+path_texturefiles = os.path.join(path_scratch, 'TextureFiles')
 path_db_final = args['path_db']
 data_base_dict = {}
 endpoint = 7225
@@ -54,6 +55,10 @@ sunit = FE.load_cases(number_3d=100, number_6d=0)
 # Iterate through the texture sub dictionaries in path_scratch and read Data_Base.json
 n_textures = len(texture_files_list)
 for texture_key, texture_file in zip(texture_keys_list[:endpoint], texture_files_list[:endpoint]):
+    # Modify texture file to be independent on directory
+    filename = os.path.basename(texture_file)
+    texture_file = os.path.join(path_texturefiles, filename)
+
     sub_dir = os.path.join(path_scratch, texture_key)
     db_path = os.path.join(sub_dir, 'Data_Base.json')
     if texture_key in data_base_dict.keys():
