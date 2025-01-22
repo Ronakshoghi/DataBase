@@ -40,11 +40,11 @@ texture_files_list = texture_files_list[:-1]
 
 texture_keys_success = os.path.join(path_scratch, "TextureFiles/success_jobs.json") #textures_ssuccesss.json
 # Clean up texture_files list to contain only success textures from the CYL 3d study
-with open(texture_keys_success, 'r') as f:
-    texture_succ_dir = json.load(f)
-
-texture_files_list = [texture_file for texture_file in texture_files_list if
-                      any(key in texture_file for key in texture_succ_dir.keys())]
+# with open(texture_keys_success, 'r') as f:
+#     texture_succ_dir = json.load(f)
+#
+# texture_files_list = [texture_file for texture_file in texture_files_list if
+#                       any(key in texture_file for key in texture_succ_dir.keys())]
 
 texture_keys_list = [os.path.basename(texture_path).split(sep='_')[-2] for texture_path in texture_files_list]
 
