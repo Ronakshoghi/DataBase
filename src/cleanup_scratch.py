@@ -1,7 +1,7 @@
 import os
 import shutil
 import numpy as np
-
+import argparse
 """
 I noticed that the scratch is restricted to 1 Mil files. This file goes through the keys subdirs and removes the 
 Makefile, the binary and the results folder.
@@ -10,7 +10,12 @@ Makefile, the binary and the results folder.
 files_to_remove = ['Makefile', 'MatchBox', 'MatchBox.cpp', 'orientations.csv']
 dirs_to_remove = ['results']
 
-path_scratch = '/storage/home/hcoda1/7/jschmidt87/scratch/3DBC_CPFFT/'
+parser = argparse.ArgumentParser(description='define dir to be cleaned')
+parser.add_argument('-pt', '--path_scratch', help='Name of the folder that holds all textures to be cleared',
+                    required=True)
+args = vars(parser.parse_args())
+
+path_scratch = args['path_scratch']
 sub_dirs = next(os.walk(path_scratch))[1]
 for texture in sub_dirs:
     path_texture = os.path.join(path_scratch, texture)
