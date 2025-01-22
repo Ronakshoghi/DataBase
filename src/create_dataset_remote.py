@@ -42,7 +42,7 @@ args = vars(parser.parse_args())
 # settings
 overwrite_results = False
 bc_per_texture = 20  # 30 , 40
-setup = 'setup_3d_iteration_1'# reconstsruciton 'setup_6d_iteration_1'
+setup = 'setup_rvalues'# 'setup_3d_iteration_1'# reconstsruciton 'setup_6d_iteration_1'
 
 # Read soft coded args from parser
 n_textures = int(args['number_textures'])
@@ -66,7 +66,7 @@ for directory in [texture_dir, bc_dir]:
 # Define the sorted texture and the load file hardwired
 texture_keys_sorted = os.path.join(texture_dir, "texture_keys_sorted.txt")
 texture_keys_success = os.path.join(texture_dir, "textures_success.json")
-bc_file = os.path.join(bc_dir, 'sig_3d_100_6d_0_texture_order.json')
+bc_file = os.path.join(bc_dir, 'sig_r-values_texture_order.json')
 #bc_file = os.path.join(bc_dir, 'sig_all.json')
 with open(bc_file, 'r') as f:
     bc_dict = json.load(f)
@@ -99,7 +99,8 @@ for idx_texture, texture_file in enumerate(texture_files_to_run):
     texture_key = os.path.basename(texture_file).split(sep='_')[1]
     # Create texture directory if not present in scratch
     pathlib.Path(os.path.join(path_scratch, texture_key)).mkdir(exist_ok=True)
-
+    # Modify texture file entrance path
+    texture_file = os.path.join(texture_dir, os.path.basename(texture_file))
     parameter_set[texture_key] = {'texture_file': texture_file,
                                   'bc_file': bc_file,
                                   'bc_dict': bc_dict[texture_key]} # commented out for reconstruction [texture_key]}

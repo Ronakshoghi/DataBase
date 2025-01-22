@@ -31,10 +31,23 @@ def generate_bckey(load_case):
 bc_dict = {}
 n_6d = 0
 n_3d = 100
-json_file = f'sig_3d_{n_3d}_6d_{n_6d}.json'
+r_vals = True
 
-# generate a list of stress boundary conditions in Voigt notation
-sig_6d = FE.training.load_cases(number_3d=n_3d, number_6d=n_6d)
+if r_vals:
+    # generate bc for r-values at [0, 15, 30, ..., 90] degree to x-direction
+    json_file = 'sig_r-values.json'
+    sig_6d = []
+    for ang in np.arange(0, 91, 15):
+        ang = np.deg2rad(ang)
+        sig = np.array([np.cos(ang)**2, np.sin(ang)**2, 0, 0, 0, -1*np.sin(ang)*np.cos(ang)])
+
+        sig /= FE.sig_eq_j2(sig)
+        sig_6d.append(sig)
+    sig_6d = np.array(sig_6d)
+else:
+    # generate a list of stress boundary conditions in Voigt notation
+    json_file = f'sig_3d_{n_3d}_6d_{n_6d}.json'
+    sig_6d = FE.training.load_cases(number_3d=n_3d, number_6d=n_6d)
 
 for bc in sig_6d:
     bc_key = generate_bckey(bc)
