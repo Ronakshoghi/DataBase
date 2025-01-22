@@ -71,7 +71,7 @@ def intersect(s_eq, e_eq, plot=True):
     return x, y, top, bot
 
 
-def calc_yield_point(result_file, plot=False):
+def calc_yield_point(result_file, plot=False, write_strains=False):
     """
     Function that calculates the homogenized yield onset at 0.2 % equivalent plastic strain from a result dict object.
     Parameters
@@ -90,6 +90,7 @@ def calc_yield_point(result_file, plot=False):
     s_eq = result_file['S']
     e_eq = result_file['E']
     stresses = pd.DataFrame(result_file, columns=['S11', 'S22', 'S33', 'S32', 'S13', 'S12'])
+    strains_pl = pd.DataFrame(result_file, columns = ['Ep11', 'Ep22', 'Ep33', 'Ep32', 'Ep13', 'Ep12'])
 
     # Interpolate between equivalent stresses and scale up
     try:
@@ -104,6 +105,10 @@ def calc_yield_point(result_file, plot=False):
         # print('openp seq: {}'.format(s_eq[bot]))
         # print('pylab seq: {}'.format(FE.seq_J2(stresses.iloc[bot].values)))
     else:
-        s_yld = stresses.iloc[bot].values + (stresses.iloc[top].values - stresses.iloc[bot].values) * (y - s_eq[bot]) \
-                / (s_eq[top] - s_eq[bot])
+        if not write_strains:
+            s_yld = stresses.iloc[bot].values + (stresses.iloc[top].values - stresses.iloc[bot].values) * \
+                    (y - s_eq[bot]) / (s_eq[top] - s_eq[bot])
+        else:
+            s_yld = strains_pl.iloc[bot].values + (strains_pl.iloc[top].values - strains_pl.iloc[bot].values) * \
+                    (y - s_eq[bot]) / (s_eq[top] - s_eq[bot])
     return s_yld

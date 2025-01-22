@@ -113,6 +113,8 @@ for texture_key, texture_file in zip(texture_keys_list[:endpoint], texture_files
                 #data_base_dict[texture_key][load_key]['Results'] = value_dict['Results']
                 try:
                     data_base_dict[texture_key][load_key]['Results'] = calc_yield_point(value_dict['Results']).tolist()
+                    data_base_dict[texture_key][load_key]['Strain_pl'] = calc_yield_point(value_dict['Results'],
+                                                                                          write_strains=True).tolist()
                     data_base_dict[texture_key][load_key]['Initial_Load'] = value_dict['Initial_Load']
                     n_succ += 1
                 except IndexError:
