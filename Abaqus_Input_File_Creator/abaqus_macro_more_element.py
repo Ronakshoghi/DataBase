@@ -33,11 +33,11 @@ def macro_function():
     depvar_val=200
 
     # x discritization
-    nx = 7
+    nx = 5
     # y discritization
-    ny = 7
+    ny = 5
     # z discritization
-    nz = 7
+    nz = 5
 
     #lnx = av_grain_minor
     lnx = minor_av

@@ -5,11 +5,11 @@ c
 c================================================================
       module mod_mesh_grid_size
          implicit none
-         integer, parameter :: Tnel=27000
+         integer, parameter :: Tnel=14000
          integer, parameter :: Tngp=8
-         integer, parameter :: Tnfx=64
-         integer, parameter :: Tnfy=64
-         integer, parameter :: Tnfz=64
+         integer, parameter :: Tnfx=32
+         integer, parameter :: Tnfy=32
+         integer, parameter :: Tnfz=32
          integer, parameter :: Iwkcoup_trip=0  !-->with(1), without(0) 
          integer, parameter :: Iwkcoup_grad=0  !-->with(1), without(0) 
          integer, parameter :: Iwkcoup_int=0   !-->with(1), without(0)

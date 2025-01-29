@@ -10,12 +10,15 @@ H1,1
 V4,3
 **
 **-------------------------------------------------------------------
+*Amplitude, name=MyAmp
+0, 0, 62.5, 1, 125, 0, 187.5, -1, 250, 0, 
+312.5, 1, 375, 0, 437.5, -1, 500, 0,
+562.5, 1, 625, 0, 687.5, -1, 750, 0
+** STEP: Cyclic Loading
 **
-** STEP: Loading
-**
-*Step, name=Loading, nlgeom=YES, inc=500000, unsymm=YES, solver=ITERATIVE
+*Step, name=Cyclic Loading, nlgeom=YES, inc=500000, unsymm=YES, solver=ITERATIVE
 *Static
-1, 250, 1e-6, 1
+1, 750, 1e-5, 0.5
 **
 **
 *CONTROLS, PARAMETER=TIME INCREMENTATION
@@ -32,7 +35,7 @@ V4,3
 ** LOADS
 **
 ** Name: Load Type: Stress BC
-*Cload
+*Cload, amplitude=MyAmp
 V2,1, -0.3752356825122646
 V4,2, -0.5460770134887019
 H1,3, 53.75659709123606
@@ -49,9 +52,9 @@ V4,1, 0.0
 *Node Output
 U,RF,CF,COORD
 *Element Output, directions=YES
+S,LE
 SDV156,SDV157,SDV158
 SDV159,SDV160,SDV161
-S,LE
 ** HISTORY OUTPUT: H-Output-1
 **
 **Output, history, variable=PRESELECT

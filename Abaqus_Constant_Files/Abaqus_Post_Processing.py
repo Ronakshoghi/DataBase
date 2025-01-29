@@ -256,7 +256,7 @@ class OdbData(object):
                     nodeObjectDict[node].z.append(z)
         return nodeObjectDict
 
-    def F_CaclSigmaH(self, nodeObjectDict, dimension):
+    def F_CalcSigmaH(self, nodeObjectDict, dimension):
 
         # Origin
         origin = [nodeObjectDict['V1'].x[0], nodeObjectDict['V1'].y[0], nodeObjectDict['V1'].z[0]]
@@ -593,7 +593,7 @@ odbName = '{}_Abaqus_Input_File.odb'.format(Key)
 # Result1
 Result1 = OdbData()
 node = Result1.F_ODB(odbName, dimension, beginStep, endStep)
-Result1.F_CaclSigmaH(node, dimension)
+Result1.F_CalcSigmaH(node, dimension)
 os.chdir('..')
 Key_Results_Path = "{}/results".format(os.getcwd())
 os.chdir(Key_Results_Path)

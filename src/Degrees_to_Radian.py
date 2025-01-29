@@ -37,7 +37,6 @@ with open('Orientation_Radian', 'w') as outfile:
         radians_columns = [degrees_to_radians(float(deg)) for deg in columns]
 
         # Format the output line with 2 spaces between components in scientific notation
-        output_line = '{:.15e}  {:.15e}  {:.15e}\n'.format(*radians_columns)
-
+        output_line = '{:.5f}  {:.5f}  {:.5f}\n'.format(*radians_columns)
         # Write the output line to the output file
         outfile.write(output_line)

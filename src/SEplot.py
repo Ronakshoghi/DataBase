@@ -33,13 +33,11 @@ def SE_Plot (json_file ):
         Strain = [data[key]["Results"]["E"]]
         SE_data[key] = {"Stress": Stress, "Strain": Strain}
         plt.scatter(SE_data[key]["Strain"], SE_data[key]["Stress"], s=1)
-        plt.xlim(0, 0.03)
-        plt.ylim(0, 100)
         plt.tick_params(axis='both', which='major', labelsize=12)
         plt.xlabel("Strain", fontsize=16)
         plt.ylabel("Stress", fontsize=16)
     plt.show()
 
 
-SE_Plot("Data_Base_Final_New (1).json")
+SE_Plot("Data_Base_Updated.json")
 

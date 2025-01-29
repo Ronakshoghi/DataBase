@@ -1,18 +1,18 @@
 *Nset, nset=V1, instance=PART-1-1 
-446
+174
 *Nset, nset=V2, instance=PART-1-1 
-512
+216
 *Nset, nset=V3, instance=PART-1-1 
-506
+212
 *Nset, nset=V4, instance=PART-1-1 
-495
+191
 *Nset, nset=H1, instance=PART-1-1 
-464
+188
 *Nset, nset=H2, instance=PART-1-1 
-509
+213
 *Nset, nset=H3, instance=PART-1-1 
-508
+209
 *Nset, nset=H4, instance=PART-1-1 
-482
+198
 *Nset, nset=Vertices 
 V1,V2,V4,H1

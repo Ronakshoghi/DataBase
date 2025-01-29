@@ -42,7 +42,7 @@ def Key_Generator(Load_Case):
 
     Load_String = ''.join(str(e) for e in Load_Case)
     Load_Hash = hashlib.sha256(Load_String.encode('utf-8')).hexdigest()
-    Tx="Rnd"
+    Tx="Gs"
     with open(Orientation_File_Path) as f:
         data = f.read()
         Orientation_Hash = hashlib.sha256(data.encode('utf-8')).hexdigest()

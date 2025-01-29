@@ -26,12 +26,16 @@ import os
 abspath = os.path.abspath(__file__)
 dname = os.path.dirname(abspath)
 os.chdir(dname)
-Results_Dict = DH.Read_Database_From_Json("Data_Base.json")
-load_cases = "sigdata1.txt"
-loads = np.genfromtxt(load_cases)
-Source_Path = os.getcwd()
 os.chdir('..')
 Current_Path = os.getcwd()
+Source_Path = os.getcwd()
+Abaqus_Temp_Files_Path = "{}/Abaqus_Temp_Files".format(Current_Path)
+Abaqus_Constant_Files_Path = "{}/Abaqus_Constant_Files".format(Current_Path)
+Results_Dict = DH.Read_Database_From_Json("Data_Base.json")
+os.chdir(Abaqus_Temp_Files_Path)
+load_cases = "sigdata1.txt"
+loads = np.genfromtxt(load_cases)
+os.chdir(Current_Path)
 
 "Main Process"
 
@@ -43,7 +47,7 @@ for counter, load in enumerate(loads):
     else:
         print("The key was not found in JSON file")
         KFC.Create_Sub_Folder(Key)
-        scaling_factor = 8
+        scaling_factor = 120
         print ("initial load: {}".format(load))
         scaled_load = load * scaling_factor
         Max_Strain = 0
@@ -67,11 +71,13 @@ for counter, load in enumerate(loads):
                 scaled_load = load * scaling_factor
 
         #Insert Results to the Data Base
-        Results_Dict[Key] = {"Meta_Data": MR.Meta_reader(Key),
-                             "Initial_Load": load.tolist(),
+        Results_Dict[Key] = {"Meta_Data": {
+                              **MR.Meta_reader(Key),
                              "Scaling_Factor": scaling_factor,
+                             "Initial_Load": load.tolist(),
                              "Applied_Load": scaled_load.tolist(),
                              "Max_Total_Strain": Max_Strain,
+                                },
                              "Results": RP.Results_Reader(Key)}
 
     DH.Json_Database_Creator(Results_Dict, "Data_Base_Updated.json")
