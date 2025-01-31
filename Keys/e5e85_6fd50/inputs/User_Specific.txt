@@ -1,0 +1,21 @@
+"$schema": "https://github.com/Ronakshoghi/MetadataSchema/blob/main/microstructure_sensitive_mechanical_metadata_schema.json"
+"title": "Stress-Strain Analysis of Polycrystalline Copper with Random Texture Using Crystal Plasticity FEM"
+"creator": "Shoghi, Ronak"
+"creator_ORCID": "0000-0002-1451-2715"
+"creator_affiliation":"Ruhr University Bochum"
+"creator_institute": "Interdisciplinary Centre for Advanced Materials Simulation (ICAMS)"
+"creator_group": "Micromechanical and Macroscopic Modelling"
+"contributor": "Hartmaier, Alexander"
+"contributor_ORCID": "0000-0002-3710-1169"
+"contributor_affiliation": "Ruhr University Bochum"
+"contributor_institute": "Interdisciplinary Centre for Advanced Materials Simulation (ICAMS)"
+"contributor_group": "Micromechanical and Macroscopic Modelling"
+"shared_with": "all"
+"description": "Stress-strain analysis of single-phase polycrystalline copper with a random texture using a cubic representative volume element (RVE) and periodic boundary conditions, performed with Abaqus through the crystal plasticity finite element method."
+"rights": "Creative Commons Attribution 4.0 International",
+"rights_holder": "Shoghi, Ronak"
+"funder_name": "DFG",
+"fund_identifier": "190 389 738\u2014TRR 103",
+"publisher": "Zenodo",
+"relation": "10.1088/2632-2153/ad379e"
+"keywords":"CPFEM","Multi-axial loading"

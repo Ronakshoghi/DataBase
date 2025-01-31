@@ -46,7 +46,8 @@ def Key_Generator(Load_Case):
     with open(Orientation_File_Path) as f:
         data = f.read()
         Orientation_Hash = hashlib.sha256(data.encode('utf-8')).hexdigest()
-    Key = "Us_A{}B{}C{}D{}E{}F{}_{}_{}_Tx_{}".format(Load_Evaluation[0],Load_Evaluation[1],Load_Evaluation[2],Load_Evaluation[3],Load_Evaluation[4],Load_Evaluation[5],Load_Hash[:5],Orientation_Hash[:5],Tx)
+    Key = "{}_{}".format(Load_Hash[:5],Orientation_Hash[:5])
+    print (Key)
     return (Key)
 
 

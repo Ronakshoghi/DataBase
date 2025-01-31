@@ -27,14 +27,28 @@ def Results_Reader (Key):
     for root, dirs, files in os.walk(os.getcwd(), topdown=False):
         for name in files:
             Results_Files_Name.append(name)
-    Available_Results = {}
+    Available_Results ={}
+    stress = {}
+    plastic_strain ={}
+    total_strain ={}
     for Result_File in Results_Files_Name:
         with open("{}/{}".format(Results_Path, Result_File)) as Temp_Result:
             lines = Temp_Result.readlines()
-            Values = []
-            for line in lines:
-                Values.append(float(line.strip('\n')))
-            Available_Results[Result_File.strip(".out")] = Values
+            Values = [float(line.strip()) for line in lines]
+
+        file_key = Result_File.strip(".out")
+
+        if "stress" in file_key.lower():
+            stress[file_key] = Values
+        elif "total_strain" in file_key.lower():
+            total_strain[file_key] = Values
+        elif "plastic_strain" in file_key.lower():
+            plastic_strain[file_key] = Values
+        else:
+            print(f"Warning: {Result_File} does not match any category!")
+    Available_Results["stress"]=stress
+    Available_Results["plastic_strain"] = plastic_strain
+    Available_Results["total_strain"] = total_strain
     os.chdir(Current_Path)
     return Available_Results
 
