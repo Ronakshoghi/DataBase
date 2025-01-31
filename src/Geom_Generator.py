@@ -45,11 +45,12 @@ def Abaqus_Input_Generator(Key):
     Geometry_File_Path = "{}/geometry_Periodic.inp".format(Abaqus_Temp_Files_Path)
     Material_File_Path = "{}/Material.inp".format(Abaqus_Temp_Files_Path)
     Orientation_File_Path = "{}/Orientation.txt".format(Abaqus_Temp_Files_Path)
+    User_Specific_File_Path = "{}/User_Specific.txt".format(Abaqus_Temp_Files_Path)
     Keys_Path ="{}/Keys".format(Current_Path)
     os.chdir(Keys_Path)
     Key_path = os.path.abspath(Key)
     Key_Inputs_Path = "{}/inputs".format(Key_path)
-    files_path = [Geometry_File_Path, Material_File_Path, Orientation_File_Path]
+    files_path = [Geometry_File_Path, Material_File_Path, Orientation_File_Path, User_Specific_File_Path]
     for file in files_path:
         shutil.copy2(file, Key_Inputs_Path)
     result = []
