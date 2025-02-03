@@ -1,9 +1,10 @@
 # Micormechanical simulation workflow
 ### a tool designed to manage micromechanical simulations using CPFEM (Crystal Plasticity Finite Element Method) or CPFFT (Crystal Plasticity Fast Fourier Transform). It provides an efficient workflow for:
 
--Creating simulation input files
--Running simulation jobs
--Collecting and storing results in JSON format
+
+- Creating simulation input files
+- Running simulation jobs
+- Collecting and storing results in JSON format
 
 After each simulation, metadata is automatically extracted following the metadata schema described in <u>(https://github.com/Ronakshoghi/MetadataSchema)<u>
  
