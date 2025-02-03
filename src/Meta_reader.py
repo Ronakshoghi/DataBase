@@ -199,6 +199,63 @@ def constituitve_model_extraction_from_fortran(file_path, target_material_number
             extracting = False
     return constitutive_model
 
+def extract_discretization_info(inp_lines):
+    """
+    Extracts element size, number of elements, and RVE size from an Abaqus .inp file.
+
+    Parameters:
+    inp_lines (list): List of lines from the Abaqus .inp file.
+
+    Returns:
+    tuple: (element_size in mm, number of elements, RVE size in mm)
+    """
+    import numpy as np
+
+    node_coordinates = []
+    recording_nodes = False
+
+    for line in inp_lines:
+        if "*Node" in line:
+            recording_nodes = True
+            continue
+        elif "*" in line and recording_nodes:
+            break
+
+        if recording_nodes:
+            parts = line.strip().split(",")
+            if len(parts) >= 4:
+                x, y, z = map(float, parts[1:4])
+                node_coordinates.append([x, y, z])
+
+    node_coordinates = np.array(node_coordinates)
+
+    x_coords = np.unique(node_coordinates[:, 0])
+    y_coords = np.unique(node_coordinates[:, 1])
+    z_coords = np.unique(node_coordinates[:, 2])
+    x_element_sizes = np.diff(x_coords)
+    y_element_sizes = np.diff(y_coords)
+    z_element_sizes = np.diff(z_coords)
+    avg_x_element_size = np.mean(x_element_sizes) if x_element_sizes.size > 0 else None
+    avg_y_element_size = np.mean(y_element_sizes) if y_element_sizes.size > 0 else None
+    avg_z_element_size = np.mean(z_element_sizes) if z_element_sizes.size > 0 else None
+    element_size = np.mean([avg_x_element_size, avg_y_element_size, avg_z_element_size])
+    element_count = 0
+    recording_elements = False
+    for line in inp_lines:
+        if "*Element" in line:
+            recording_elements = True
+            continue
+        elif "*" in line and recording_elements:
+            break
+
+        if recording_elements:
+            element_count += 1
+    rve_size = element_count ** (1/3) * element_size
+    return element_size, element_count, rve_size
+
+
+
+
 
 def Meta_reader(Key):
     parameters = Key.split('_')
@@ -233,10 +290,12 @@ def Meta_reader(Key):
                 Meta[key] = value
     Meta['Date'] = date.today().strftime("%Y-%m-%d")
     #system_related
-    Meta["software"] = "Abaqus"
+
     Input_File=open('{}_Abaqus_Input_File.inp'.format(Key))
     inp_lines = Input_File.readlines()
-    Abaqus_Version = (inp_lines[2].split(':'))[1]
+    software_name, software_version = extract_geom_software_name(inp_lines)
+    Meta["software"] = software_name
+    Abaqus_Version = software_version
     Meta['software_version'] = Abaqus_Version
     Meta['system']: uname.system
     Meta["system_version"] = uname.release
@@ -260,16 +319,12 @@ def Meta_reader(Key):
             else:
                 discretization_type = "Unknown Type"
 
-    Element_Size = 0.095 # can be get from max and min, element volume, then get some average by dividing by number of nodes
-    #x = round((Grain_Number ** (1/3)) * Element_Size, 4)
-    #RVE_Size = (x, x, x) # diff
-    y = 0.095
-    RVE_size = (y,y,y)
-    Meta['RVE_size'] = RVE_size
-    Meta["RVE_continuity"] = "true" # For now! Need update based on inp file.
+    discretization_unit_size, discretization_count, RVE_size = extract_discretization_info(inp_lines)
+    Meta['RVE_size'] = (RVE_size,RVE_size,RVE_size)
+    Meta["RVE_continuity"] = "true"
     Meta["discretization_type"] = discretization_type
-    Meta["discretization_unit_size"] = (Element_Size,Element_Size,Element_Size)
-    Meta["discretization_count"] = Element_Number #should be given in the main.
+    Meta["discretization_unit_size"] = (discretization_unit_size,discretization_unit_size,discretization_unit_size)
+    Meta["discretization_count"] = Element_Number
     origin = {}
     geom_software_name, geom_software_version =extract_geom_software_name(inp_lines)
     origin["software"] = geom_software_name
