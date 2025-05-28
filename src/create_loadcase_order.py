@@ -15,11 +15,11 @@ valid texture file, chunks it into blocks of 5 Textures and assigns 40 BC to eac
 """
 
 texture_keys_sorted = '/Users/jan/Desktop/Phoenix_Code_Temp/texture_keys_sorted.txt'
-bc_file = '/Users/jan/ronak_db/DataBase/src/sig_3d_100_6d_0.json'
+bc_file = '/Users/jan/ronak_db/DataBase/src/sig_3d_0_6d_200.json'
 texture_keys_success = '/Users/jan/Desktop/Phoenix_Code_Temp/textures_success.json'
 
-bc_per_texture = 20
-
+bc_per_texture = 200
+tx_interval = 1  # Every 25th texture should be assigned the same BCs (only for special case where bc_per_texture == n_bc_total)
 with open(texture_keys_sorted, "r") as f:
     texture_files_list = f.read()
     texture_files_list = texture_files_list.split("\n")
@@ -46,7 +46,7 @@ bc_texture_dict = {}
 # y = np.sin(u) * np.sin(v)
 # z = np.cos(v)
 
-for idx_texture_start in range(0, len(texture_files_list), n_chunks):
+for idx_texture_start in range(0, 5, n_chunks): # 0, len(texture_files_list), n_chunks):
     # # Plotting
     # fig, axs = plt.subplots(2, 3, dpi=300, subplot_kw={'projection': '3d'}, figsize=(15, 10))
     # plt.subplots_adjust(wspace=0.2, hspace=0.2)
@@ -67,26 +67,39 @@ for idx_texture_start in range(0, len(texture_files_list), n_chunks):
         print(f'Stats:')
         print(f'        n_bcs remain: {len(bcs)}')
 
-        # Determine the indices of the bc_per_textures (default=40) bcs for this texture
-        idx_bc_sub = greedy_thinning(bcs, bc_per_texture)
-        idx_next = [idx for idx in np.arange(0, len(bcs)) if idx not in idx_bc_sub]
-        bcs_red = bcs[idx_bc_sub, :]
-        bcs = bcs[idx_next, :]
+        if bc_per_texture != n_bc_total:
+            # Determine the indices of the bc_per_textures (default=40) bcs for this texture
+            idx_bc_sub = greedy_thinning(bcs, bc_per_texture)
+            idx_next = [idx for idx in np.arange(0, len(bcs)) if idx not in idx_bc_sub]
+            bcs_red = bcs[idx_bc_sub, :]
+            bcs = bcs[idx_next, :]
 
-        # Determine the load keys and reduce set for next iteration
-        load_keys_red = [load_keys[idx] for idx in idx_bc_sub]
-        load_keys = [load_keys[idx] for idx in idx_next]
+            # Determine the load keys and reduce set for next iteration
+            load_keys_red = [load_keys[idx] for idx in idx_bc_sub]
+            load_keys = [load_keys[idx] for idx in idx_next]
 
-        if texture_key not in bc_texture_dict.keys():
-            print(f'Create new entry for {texture_key}')
-            bc_texture_dict[texture_key] = {}
-        if any(load_keys in load_keys_red for load_keys in bc_texture_dict[texture_key].keys()):
-            raise KeyError(f'Load Keys are already present in this texture {texture_key}')
+            if texture_key not in bc_texture_dict.keys():
+                print(f'Create new entry for {texture_key}')
+                bc_texture_dict[texture_key] = {}
+            if any(load_keys in load_keys_red for load_keys in bc_texture_dict[texture_key].keys()):
+                raise KeyError(f'Load Keys are already present in this texture {texture_key}')
+            else:
+                print(f'Adding {len(load_keys_red)} bcs to {texture_key}')
+                for key, value in zip(load_keys_red, bcs_red):
+                    bc_texture_dict[texture_key][key] = value.tolist()
+                    # print(f'Added bc {key} with {value} to Texture {texture_key}')
         else:
-            print(f'Adding {len(load_keys_red)} bcs to {texture_key}')
-            for key, value in zip(load_keys_red, bcs_red):
-                bc_texture_dict[texture_key][key] = value.tolist()
-                # print(f'Added bc {key} with {value} to Texture {texture_key}')
+            # Special case where all bcs should be assigned to each texture
+            if idx_texture % tx_interval == 0:
+                if texture_key not in bc_texture_dict.keys():
+                    print(f'Create new entry for {texture_key}')
+                    bc_texture_dict[texture_key] = {}
+                if any(load_keys in load_keys_red for load_keys in bc_texture_dict[texture_key].keys()):
+                    raise KeyError(f'Load Keys are already present in this texture {texture_key}')
+                else:
+                    print(f'Adding {len(load_keys)} bcs to {texture_key}')
+                    for key, value in zip(load_keys, bcs):
+                        bc_texture_dict[texture_key][key] = value.tolist()
 
         print("-----------------------------------------------------------------")
         # if idx_sub < 3:
@@ -105,6 +118,6 @@ for idx_texture_start in range(0, len(texture_files_list), n_chunks):
     # plt.show()
 
 # Save as json file
-bc_texture_file = 'sig_3d_100_6d_0_texture_order.json'
+bc_texture_file = 'sig_3d_0_6d_200_every25texture.json'
 with open(bc_texture_file, 'w') as f:
     json.dump(bc_texture_dict, f, indent=4)
