@@ -42,7 +42,7 @@ args = vars(parser.parse_args())
 # settings
 overwrite_results = False
 bc_per_texture = 20  # 30 , 40
-setup = 'setup_rvalues'# 'setup_3d_iteration_1'# reconstsruciton 'setup_6d_iteration_1'
+setup = 'setup_convstudy' # 'setup_rvalues'# 'setup_3d_iteration_1'# reconstsruciton 'setup_6d_iteration_1'
 
 # Read soft coded args from parser
 n_textures = int(args['number_textures'])
@@ -66,7 +66,7 @@ for directory in [texture_dir, bc_dir]:
 # Define the sorted texture and the load file hardwired
 texture_keys_sorted = os.path.join(texture_dir, "texture_keys_sorted.txt")
 texture_keys_success = os.path.join(texture_dir, "textures_success.json")
-bc_file = os.path.join(bc_dir, 'sig_r-values_texture_order.json')
+bc_file = os.path.join(bc_dir, 'sig_3d_0_6d_200_every25texture.json')
 #bc_file = os.path.join(bc_dir, 'sig_all.json')
 with open(bc_file, 'r') as f:
     bc_dict = json.load(f)
@@ -123,7 +123,7 @@ SBATCH_template = [
     '#SBATCH -N1 --ntasks=8',  # Number of nodes and cores per node required
     '#SBATCH --mem-per-cpu=8G',  # Memory per core
     '#SBATCH -qinferno', #qembers
-    '#SBATCH -t05:00:00', #6
+    '#SBATCH -t17:00:00', #6 usually 5 h
     '#SBATCH -oReport-%j.out',  # 8
     '#SBATCH --mail-type=FAIL',
     '#SBATCH --mail-user=jschmidt87@gatech.edu',
