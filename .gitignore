@@ -3,3 +3,8 @@
 /Recreation
 /Legacy
 /Texture/Python
+.idea/
+*.pyc
+*.xml
+.DS_Store
+/Texture/Matlab/Orientations_Han/
