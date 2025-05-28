@@ -28,7 +28,7 @@ path_scratch = args['path_scratch']
 path_texturefiles = os.path.join(path_scratch, 'TextureFiles')
 path_db_final = args['path_db']
 data_base_dict = {}
-endpoint = 7225
+endpoint = 5 # 7225
 
 # Read the ordered texture files (this is the way I do this until I got all results. I dont wanna mess things up while
 # CPFFT simulations are still running
